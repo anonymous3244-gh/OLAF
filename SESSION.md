@@ -2,21 +2,15 @@
 
 Last updated: 2026-11-01
 
-## 1. Project status
+## 1. Current project status
 
-OLAF is a mobile-first rental management application for managing bookable facilities, customer reservations, cleaning operations and operational reporting.
-
-**Current phase:** Requirements clarification and initial architecture design.
+**Phase:** Requirements clarification and initial architecture (Phase 0).
 
 **Implementation has not started.**
 
-The initial release serves one business and has three user roles:
+The initial requirements, accepted decisions, architecture and development roadmap are documented.
 
-- Administrator
-- Rental manager
-- Cleaning staff
-
-Customers do not have application access in the initial release.
+The next objective is to resolve the remaining implementation-blocking questions before starting development.
 
 ## 2. Technology stack
 
@@ -28,120 +22,73 @@ Customers do not have application access in the initial release.
 | Data access | Entity Framework Core |
 | Authentication | ASP.NET Core Identity |
 | Version control | Git / GitHub |
-| Database provider | Undecided |
-| Hosting environment | Undecided |
 
-## 3. Authoritative documentation
+Database provider and hosting environment remain undecided.
 
-Always consult these documents before making assumptions:
+## 3. Documentation — source of truth
 
-- `README.md` — Project overview and documentation index.
-- `PROJECT.md` — Functional requirements and application scope.
-- `DECISIONS.md` — Authoritative record of accepted decisions.
-- `ARCHITECTURE.md` — Technical architecture (being prepared).
-- `ROADMAP.md` — Development milestones (being prepared).
+Always consult the repository documents before making assumptions:
 
-`DECISIONS.md` takes precedence over older discussions and session notes.
+| Document | Responsibility |
+|---|---|
+| `README.md` | Project overview and navigation |
+| `PROJECT.md` | Functional requirements |
+| `DECISIONS.md` | Authoritative accepted decisions |
+| `ARCHITECTURE.md` | Technical architecture |
+| `ROADMAP.md` | Development phases and progress |
+| `SESSION.md` | Current session handover |
 
-Never treat proposals or future considerations as accepted decisions.
+`PROJECT.md` and `DECISIONS.md` take precedence over historical discussions and session notes.
 
-## 4. Important domain concepts
+Do not duplicate their contents here.
 
+## 4. Important context
+
+- OLAF initially serves one business.
+- Initial roles: Administrator, Rental manager and Cleaning staff.
+- Customers have no application access in the initial release.
+- The application is mobile-first.
 - Everything occupying a facility is represented as a reservation.
-- Reservation types initially include customer use, cleaning and offline/unavailable periods.
-- Reservations support arbitrary start/end date-times, including overnight and 24-hour periods.
-- Reservation templates provide reusable default times and prices.
-- Active reservations belonging to the same facility must never overlap.
-- Every customer reservation automatically generates exactly one associated cleaning reservation.
-- Cleaning reservations occupy the facility and participate in availability validation.
-- Cleaning duration is mandatory and configured per facility.
-- Automatically generated cleaning reservations are initially unassigned.
-- Managers manually assign cleaning staff.
-- Standalone cleaning reservations are supported.
-- Customer reservations are considered completed based on their end timestamps.
+- Customer reservations automatically generate associated cleaning reservations.
+- Cleaning reservations are initially unassigned.
+- Reservation operations involving associated customer and cleaning reservations must be atomic.
 - Cleaning requires explicit staff completion and mandatory manager approval.
 
-See `PROJECT.md` and `DECISIONS.md` for the complete business rules.
+See `PROJECT.md` and `DECISIONS.md` for the complete requirements and business rules.
 
-## 5. Critical reservation rules
+## 5. Outstanding work
 
-Customer reservations and their associated cleaning reservations must be handled atomically.
+Phase 0 is not yet complete.
 
-- Creation: Both reservations must be created successfully or neither is created.
-- Modification: Both reservations must be updated successfully or neither is updated.
-- Cancellation: Both reservations must be cancelled successfully or neither is cancelled.
-- Automatic modification of associated cleaning is only allowed before the customer reservation starts.
-- Cancelled reservations remain in the database but no longer block availability.
-- Managers cannot override reservation conflicts.
-- Reservation operations must prevent accidental duplicates and detect concurrent modifications.
+Remaining architectural and technical questions include:
 
-## 6. Cleaning workflow
+- Database provider and hosting.
+- Solution/project structure and database schema.
+- Reservation concurrency and idempotency implementation.
+- File storage and background processing.
+- Notification delivery.
+- Detailed authorization policies.
 
-Cleaning reservations have four states:
+Outstanding functional questions and their current status are maintained in `PROJECT.md` and `DECISIONS.md`.
 
-1. Pending.
-2. Completed (submitted for manager approval).
-3. Correction requested.
-4. Approved.
+## 6. Immediate next steps
 
-When corrections are requested, staff must correct the specified checklist items and resubmit the task.
+1. Continue reviewing unresolved business requirements.
+2. Resolve implementation-blocking architectural decisions.
+3. Update `DECISIONS.md` when decisions are accepted.
+4. Update `ARCHITECTURE.md` and `ROADMAP.md` when their contents change.
+5. Complete Phase 0 before starting implementation.
 
-Important cleaning events must be auditable.
+## 7. Working preferences
 
-Managers must receive a warning when a cleaning reservation reaches its deadline without completion.
+- Keep discussions concise and focused.
+- Explain important trade-offs.
+- Raise significant questions early.
+- Never silently turn proposals into accepted decisions.
+- Prefer simple, maintainable solutions.
+- Avoid premature abstractions and unnecessary complexity.
+- Keep documentation synchronized with project decisions.
 
-Complex automatic escalation and automatic staff scheduling are not part of the initial release.
+Repository: https://github.com/anonymous3244-gh/OLAF
 
-## 7. Technical principles
-
-- Store timestamps in UTC and display them in the browser's local time zone.
-- Use appropriate time-zone conversions at application boundaries.
-- Maintain an audit history of important operations.
-- Detect stale concurrent updates instead of silently overwriting changes.
-- Prevent duplicate logical submissions.
-- Store photographs as files, with references and metadata in the database.
-- Prioritize responsive, mobile-first interfaces.
-- Prefer simple, maintainable solutions over premature abstractions.
-- Discuss significant business and architectural decisions before implementation.
-
-## 8. Outstanding architectural decisions
-
-- Database provider and hosting environment.
-- Application structure and project boundaries.
-- Domain entity relationships and database schema.
-- Reservation overlap prevention under concurrent transactions.
-- Idempotency implementation.
-- EF Core optimistic concurrency implementation.
-- Time-zone and daylight-saving handling.
-- Photograph storage implementation.
-- Background processing and deadline notifications.
-- Notification delivery mechanism.
-
-## 9. Outstanding requirements clarification
-
-- Reservation search and filtering.
-- Final reservation type/purpose definitions.
-- Detailed cleaning checklist configuration.
-- Reporting definitions and calculations.
-- Notification channels and delivery preferences.
-- Detailed user permissions.
-
-Consult `PROJECT.md` and `DECISIONS.md` before adding or changing requirements.
-
-## 10. Next steps
-
-1. Finalize the outstanding business requirements.
-2. Complete `ARCHITECTURE.md`.
-3. Complete `ROADMAP.md`.
-4. Review and synchronize `README.md`, `PROJECT.md` and `DECISIONS.md`.
-5. Begin implementation only after the initial architecture and critical business rules are sufficiently defined.
-
-## 11. Working guidelines for future sessions
-
-- Read this document and the authoritative project documents before continuing.
-- Do not repeat already accepted decisions as open questions.
-- Record newly accepted decisions in `DECISIONS.md`.
-- Update `PROJECT.md` when functional requirements change.
-- Update `ARCHITECTURE.md` when technical design decisions are finalized.
-- Update `ROADMAP.md` as milestones and progress change.
-- Keep this handover concise and focused on genuinely useful session context.
+The repository is the single source of truth for project documentation and development state.
