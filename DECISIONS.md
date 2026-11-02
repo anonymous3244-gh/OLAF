@@ -1,487 +1,259 @@
 # OLAF — Decision Log
 
-Last updated: 2026-11-01
+Last updated: 2026-11-03
 
-This document records business and architectural decisions that have been explicitly discussed and accepted.
+This document is the authoritative record of why significant business and technical choices were made. Functional requirements and business rules are maintained in `PROJECT.md`; technical architecture guidance is maintained in `ARCHITECTURE.md`.
 
-It serves as the authoritative record of accepted decisions.
+## Decision format and status
 
-## Decision format
+Each decision retains its permanent ID, title, date and status. Related feature IDs identify the applicable requirements in `PROJECT.md`.
 
-Each decision contains:
-- **ID:** Unique decision identifier.
-- **Date:** Date the decision was accepted.
-- **Status:** Current decision status.
-- **Decision:** What was agreed.
-- **Rationale:** Why the decision was made, where useful.
-
-Decision statuses:
 - **Accepted:** Currently agreed and applicable.
 - **Deferred:** Intentionally postponed.
 - **Superseded:** Replaced by a newer decision.
 
----
+Decision IDs are permanent and must never be reused. When a decision changes, preserve the original record, mark it Superseded and create a new decision with the next available ID.
 
-# 1. Project scope and principles
+## 1. Accepted decisions
 
-## DEC-001: Initial deployment scope
-
+### DEC-001 — Initial deployment scope
 - **Date:** 2026-11-01
 - **Status:** Accepted
+Initially serve one business. Multi-tenant support remains a future possibility. Use generic domain concepts where appropriate to avoid unnecessary coupling to one business.
 
-OLAF initially serves a single business.
-
-Multi-tenant support is a possible future requirement but is not part of the initial implementation.
-
-The application should use generic domain concepts where appropriate to avoid unnecessary coupling to a particular business.
-
-## DEC-002: Development principles
-
+### DEC-002 — Development principles
 - **Date:** 2026-11-01
 - **Status:** Accepted
+Prefer simple, maintainable solutions; avoid premature abstractions; preserve future options where reasonably possible; discuss important decisions before implementation; develop incrementally and test each milestone; maintain documentation alongside implementation.
 
-Development should follow these principles:
-
-- Prefer simple, maintainable solutions.
-- Avoid premature abstractions and unnecessary complexity.
-- Preserve future options where reasonably possible.
-- Discuss important business and architectural decisions before implementation.
-- Develop incrementally and test each milestone.
-- Maintain documentation alongside implementation.
-
-## DEC-003: Mobile-first experience
-
+### DEC-003 — Mobile-first experience
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** USR, CLN
 
-OLAF must provide a responsive, mobile-friendly interface.
+Provide a responsive, mobile-friendly interface, paying particular attention to small-screen workflows used by cleaning staff.
 
-Particular attention should be given to efficient use of small screens, especially for cleaning staff performing their daily tasks.
-
----
-
-# 2. Reservation model
-
-## DEC-004: Everything occupying a facility is a reservation
-
+### DEC-004 — Unified reservation model
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, AVL
 
-Everything that occupies a bookable facility is represented as a reservation.
+Represent everything that occupies a bookable facility as a reservation. Use a unified model to simplify availability management and avoid artificial customer bookings for other facility activities.
 
-Initial reservation types include:
-- Customer use.
-- Cleaning.
-- Offline/unavailable periods.
-
-Reservations share common concepts such as facility, start/end date/time and type/purpose.
-
-Price and assignee are optional because they are not meaningful for every reservation type.
-
-Rationale: A unified reservation model simplifies availability management and prevents the need for artificial customer bookings to represent other facility activities.
-
-## DEC-005: Reservations support arbitrary time periods
-
+### DEC-005 — Arbitrary reservation periods
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** RES
 
-Reservations must support arbitrary start and end date/time values.
+Support custom start and end date/time values, including short, overnight and 24-hour-or-longer periods. Templates must not impose duration restrictions.
 
-Supported durations include:
-- A few hours.
-- 24 hours or longer.
-- Overnight periods.
-- Manually entered custom periods.
-
-Reservation templates must not impose artificial restrictions on reservation duration.
-
-## DEC-006: Reservation templates
-
+### DEC-006 — Reservation templates
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** TMP
 
-Reusable reservation templates contain:
-- Name.
-- Start time.
-- End time.
-- Price.
+Use reusable, facility-specific reservation templates. Selecting a template populates the form, but managers retain control over all values and may enter custom values. The term *reservation template* is preferred over *shift template*.
 
-Templates can be associated with specific facilities.
-
-Selecting a template populates the reservation form, but managers can modify all values or enter custom values.
-
-Templates must support overnight periods and 24-hour reservations.
-
-The term *reservation template* is preferred over *shift template*.
-
-## DEC-007: Customer reservations are immediately confirmed
-
+### DEC-007 — Immediate confirmation and manager-managed reservations
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, CUS, USR
 
-Every customer reservation created by a manager is confirmed immediately.
+Customer use reservations created by managers are confirmed immediately; there is no pending state in the initial release. Customers do not access OLAF or create reservations themselves.
 
-There is no pending customer reservation state in the initial release.
-
-Customers cannot access the application or create reservations themselves.
-
-## DEC-008: No overlapping active reservations
-
+### DEC-008 — No overlapping active reservations
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** AVL
 
-Two active reservations must never overlap for the same facility.
+Active reservations of any type cannot overlap for the same facility. Managers cannot override conflicts. A facility can be taken Offline only after affected future Customer use reservations have been handled.
 
-This applies to every reservation type, including:
-- Customer use.
-- Cleaning.
-- Offline/unavailable periods.
-
-Managers cannot override reservation conflicts.
-
-If a facility needs to be taken offline despite existing future reservations, affected customer reservations must first be handled manually by contacting customers and cancelling or rescheduling their reservations.
-
-## DEC-009: Consecutive customer reservations are not allowed
-
+### DEC-009 — Cleaning between Customer use reservations
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, AVL, CLN
 
-Cleaning must take place between customer reservations.
+A facility cannot transition directly from one Customer use reservation to another without the required Cleaning reservation.
 
-A facility cannot transition directly from one customer reservation to another without the required cleaning reservation.
-
-## DEC-010: Cancellation does not remove reservations
-
+### DEC-010 — Cancellation preserves reservation history
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, AVL
 
-Cancelled reservations remain in the database for historical and reporting purposes.
+Cancellation sets the reservation's cancellation state (`IsCancelled = true`) without deleting it or changing its original dates and times. Cancelled reservations do not block availability, so cancellation does not require availability validation.
 
-Cancellation changes the reservation's cancellation state (`IsCancelled = true`).
-
-The original start and end times remain unchanged.
-
-Cancelled reservations no longer block availability.
-
-Cancellation does not require availability/conflict validation because it does not introduce or modify occupied time periods.
-
-## DEC-011: Customer reservation completion is time-based
-
+### DEC-011 — Customer use completion is time-based
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** RES
 
-Customer reservations do not require an explicit completed status.
+A Customer use reservation is considered completed when its end time passes. No separate completion status or database update is needed merely because it has ended.
 
-Once their end time passes, they are considered completed based on their timestamps.
-
-No database update is necessary merely because a reservation has ended.
-
-Rationale: An additional completion status would not provide meaningful information for customer reservations.
-
----
-
-# 3. Cleaning operations
-
-## DEC-012: Cleaning duration belongs to the facility
-
+### DEC-012 — Cleaning duration belongs to the facility
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** FAC, CLN
 
-Every facility has a mandatory cleaning duration setting.
+Each facility has one mandatory cleaning-duration setting. There is no separate cleaning-buffer setting; the configured duration determines generated Cleaning reservation length.
 
-This represents the time required to clean the facility after customer use.
-
-There are no separate cleaning-duration and cleaning-buffer settings.
-
-The configured duration determines the length of automatically generated cleaning reservations.
-
-## DEC-013: Every customer reservation creates a cleaning reservation
-
+### DEC-013 — Every Customer use reservation generates one Cleaning reservation
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, CLN
 
-Creating a customer reservation automatically creates exactly one associated cleaning reservation.
+Generate exactly one associated Cleaning reservation for every Customer use reservation, and keep a reference to the associated Cleaning reservation on the Customer use reservation. Generate it eagerly, starting at the end of Customer use, with the facility's configured duration, a fixed deadline and no initial assignee. This ensures facilities can be cleaned as early as possible.
 
-Every customer reservation has a reference to its associated cleaning reservation.
-
-The cleaning reservation:
-- Starts when the customer reservation ends.
-- Has a duration equal to the facility's configured cleaning duration.
-- Has a fixed end time, which is its deadline.
-- Is initially unassigned.
-
-Cleaning reservations are generated eagerly, even when no subsequent customer reservation exists.
-
-Rationale: Facilities should be cleaned as early as possible and remain ready for future customers.
-
-## DEC-014: Standalone cleaning reservations are allowed
-
+### DEC-014 — Standalone Cleaning reservations
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** CLN
 
-Managers can create as many standalone cleaning reservations as necessary.
+Managers may create standalone Cleaning reservations without an associated Customer use reservation.
 
-Standalone cleaning reservations do not require an associated customer reservation.
-
-## DEC-015: Customer and cleaning reservation creation is atomic
-
+### DEC-015 — Atomic Customer use and Cleaning creation
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, CLN, AVL
 
-Creating a customer reservation and its associated cleaning reservation is one atomic operation.
+Create the Customer use reservation and its associated Cleaning reservation as one atomic operation. Both must pass availability validation; if either conflicts, neither is created.
 
-Both reservations must pass availability validation.
-
-If either reservation conflicts with an existing active reservation, neither reservation is created.
-
-There must never be a customer reservation without its associated cleaning reservation, or vice versa as a result of a failed creation operation.
-
-## DEC-016: Customer and cleaning reservation modifications are atomic
-
+### DEC-016 — Atomic Customer use and Cleaning modification
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, CLN, AVL, AUD
 
-Modifying a customer reservation automatically adjusts its associated cleaning reservation.
+Modify the Customer use reservation and its associated Cleaning reservation together, validating both and rolling back both if either change fails. Automatic associated-cleaning changes are allowed only before Customer use starts. Managers may independently edit Cleaning reservations. Record modifications in audit history.
 
-Both changes must:
-- Be validated against existing reservations.
-- Succeed together.
-- Be rolled back together if either change fails.
-
-Automatic changes to the associated cleaning reservation are only permitted if the customer reservation has not started.
-
-Once a customer reservation has started, it cannot be cancelled or modified in a way that requires changing its associated cleaning reservation.
-
-Managers can independently edit cleaning reservations when necessary.
-
-All modifications must be recorded in the audit history.
-
-## DEC-017: Customer and cleaning reservation cancellation is atomic
-
+### DEC-017 — Atomic Customer use and Cleaning cancellation
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, CLN, AVL
 
-Cancelling a customer reservation also cancels its associated cleaning reservation.
+Cancelling a Customer use reservation also cancels its associated Cleaning reservation atomically. Preserve dates and times and do not perform availability validation. Standalone Cleaning reservations may be cancelled independently.
 
-Both cancellation state changes must succeed together.
-
-Cancellation does not modify reservation dates or times and does not require availability validation.
-
-Standalone cleaning reservations can be cancelled independently.
-
-## DEC-018: Cleaning reservations are initially unassigned
-
+### DEC-018 — Manual Cleaning assignment
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** CLN
 
-Automatically generated cleaning reservations are initially created without an assigned cleaning staff member.
+Generated Cleaning reservations start unassigned. Managers assign one cleaning staff member and may change the assignment. Automatic staff scheduling by shifts or workload is deferred.
 
-Managers manually assign one cleaning staff member.
-
-Managers can change assignments when necessary.
-
-Automatic staff scheduling based on working shifts and workload is deferred.
-
-## DEC-019: Cleaning requires explicit completion
-
+### DEC-019 — Explicit Cleaning completion
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** CLN
 
-Unlike customer reservations, cleaning reservations require an explicit completion action from the assigned cleaning staff member.
+Cleaning requires an explicit completion action by assigned staff, including checklist completion and submission for manager review.
 
-Cleaning staff must complete the required checklist and submit the cleaning for manager review.
-
-## DEC-020: Manager approval is mandatory
-
+### DEC-020 — Mandatory manager approval
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** CLN
 
-Every completed cleaning reservation requires manager approval.
+Every completed Cleaning reservation requires manager approval. The workflow states are Pending, Completed, Correction requested and Approved.
 
-Cleaning staff submission alone does not mean the cleaning operation has been approved.
-
-The cleaning workflow has four states:
-
-- Pending.
-- Completed (submitted for approval).
-- Correction requested.
-- Approved.
-
-## DEC-021: Cleaning corrections require staff resubmission
-
+### DEC-021 — Cleaning corrections require resubmission
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** CLN
 
-When a manager requests corrections:
-- The manager identifies the checklist steps requiring correction.
-- The assigned cleaning staff member can reopen the cleaning task.
-- The staff member corrects the specified steps.
-- The staff member resubmits the cleaning for manager approval.
+When corrections are requested, the assigned staff member corrects the specified checklist steps and resubmits the task. The cycle may repeat until approval.
 
-The workflow can repeat until approval.
-
-## DEC-022: No complex cleaning escalation workflow
-
+### DEC-022 — No complex Cleaning escalation
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** CLN, NTF
 
-The system should provide visibility into:
-- Upcoming cleaning deadlines.
-- Overdue cleaning reservations.
-- Cleaning awaiting manager approval.
-- Cleaning requiring corrections.
-
-Managers must receive a warning/notification when a cleaning reservation reaches its end time without being marked as completed.
-
-No automatic approval, artificial deadline extensions or complex escalation mechanisms are planned.
-
-Managers and cleaning staff are responsible for ensuring facilities are ready before customers arrive.
-
-If a cleaning or approval delay affects an upcoming customer arrival, the responsible people must resolve the situation directly.
+Provide visibility into upcoming, overdue, awaiting-approval and correction-required Cleaning reservations, and warn managers when a Cleaning deadline passes without completion. Do not add automatic approvals, artificial deadline extensions or complex escalation. People remain responsible for resolving operational exceptions directly.
 
 Rationale: OLAF should support operational accountability rather than attempt to automate every exceptional human situation.
 
-## DEC-023: Cleaning operations must be auditable
-
+### DEC-023 — Cleaning operations are auditable
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** AUD
 
-Important cleaning events must be recorded in the audit history.
+Record important Cleaning events, including assignment changes, completion submissions, approvals, correction requests, affected checklist steps and resubmissions.
 
-These include:
-- Assignment changes.
-- Completion submissions.
-- Manager approvals.
-- Correction requests.
-- Checklist steps requiring correction.
-- Resubmissions.
-
----
-
-# 4. Customers and users
-
-## DEC-024: Customers are managed by rental managers
-
+### DEC-024 — Customers are managed by rental managers
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** CUS
 
-Customer management is part of the initial release.
+Customer management is part of the initial release. Managers maintain customer records and view reservation history; customers have no application access initially.
 
-Managers can create, edit, search and browse customers and view their reservation history.
-
-Customers cannot access OLAF in the initial release.
-
-## DEC-025: Customer selection during reservation creation
-
+### DEC-025 — Customer selection during reservation creation
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** CUS, RES
 
-The reservation creation interface should provide:
-- A searchable dropdown for existing customers.
-- A convenient action to create a new customer without leaving the reservation form.
-- Automatic selection of the newly created customer.
+Provide searchable selection of existing customers and a convenient way to create and automatically select a new customer without leaving the reservation form. An inline or modal interface is suitable.
 
-An inline or modal interface is suitable.
-
-## DEC-026: Initial user roles
-
+### DEC-026 — Initial user roles
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** USR
 
-The initial application has three roles:
+The initial roles are Administrator, Rental manager and Cleaning staff. Authorization must restrict operations according to each role's responsibilities.
 
-- Administrator.
-- Rental manager.
-- Cleaning staff.
-
-Role-based authorization must restrict users to operations appropriate to their responsibilities.
-
----
-
-# 5. Technical and operational decisions
-
-## DEC-027: Initial technology stack
-
+### DEC-027 — Initial technology stack
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related architecture:** ARCHITECTURE.md
 
-The initial technology stack is:
+The initial stack is C#/.NET 10, ASP.NET Core Razor Pages, HTMX, Entity Framework Core, ASP.NET Core Identity and Git/GitHub. Database provider and hosting environment remain undecided.
 
-| Component | Technology |
-|---|---|
-| Backend | C# / .NET 10 |
-| Web application | ASP.NET Core Razor Pages |
-| Dynamic interactions | HTMX |
-| Data access | Entity Framework Core |
-| Authentication | ASP.NET Core Identity |
-| Version control | Git / GitHub |
-
-Database provider and hosting environment remain undecided.
-
-## DEC-028: UTC timestamp storage
-
+### DEC-028 — UTC timestamp storage
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, CLN, AUD
 
-Store timestamps in UTC.
+Store timestamps in UTC, display times in the browser's local time zone and perform appropriate time-zone conversions at application boundaries.
 
-Display times in the browser's local time zone.
-
-Perform appropriate time-zone conversions at application boundaries.
-
-## DEC-029: Idempotent reservation operations
-
+### DEC-029 — Idempotent reservation operations
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, CLN
 
-Prevent accidental duplicate reservations caused by repeated submissions of the same logical operation.
+Repeated submissions of the same logical operation must not create duplicate reservations or associated Cleaning reservations. The implementation remains to be investigated.
 
-A repeated submission must not create multiple reservations.
-
-The specific implementation remains to be investigated.
-
-## DEC-030: Optimistic concurrency for editing
-
+### DEC-030 — Optimistic concurrency for editing
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** RES, AVL
 
-The application must detect stale updates when multiple managers edit the same reservation.
+Detect stale updates when multiple managers edit the same reservation. Never silently overwrite another manager's changes. The specific EF Core implementation remains to be investigated.
 
-Changes must never silently overwrite another manager's modifications.
-
-The specific EF Core concurrency implementation remains to be investigated.
-
-## DEC-031: Audit history
-
+### DEC-031 — Audit history
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related feature:** AUD
 
-Maintain an audit history for important operations.
+Maintain an audit history recording who performed an operation, what changed, when it happened and previous/new values where appropriate. Important changes include reservation dates, prices, types, statuses, cancellations, assignments and Cleaning workflow events.
 
-At minimum, record:
-- Who performed the operation.
-- What changed.
-- When it happened.
-- Previous and new values where appropriate.
-
-Important changes include reservation dates, prices, types, statuses, cancellations, assignments and cleaning workflow events.
-
-## DEC-032: Photograph storage
-
+### DEC-032 — Photograph storage
 - **Date:** 2026-11-01
 - **Status:** Accepted
+- **Related features:** CLN
 
-Photographs should generally be stored as files rather than database blobs.
+Store photographs as files rather than database blobs. Store file references and relevant metadata in the database. The storage implementation remains undecided.
 
-The database should contain file references and relevant metadata.
+## 2. Deferred decisions
 
-The actual storage implementation remains undecided.
+- **Database provider:** Selection is deferred.
+- **Hosting environment:** Selection is deferred.
+- **Audit implementation:** The required audit information and events are established; the technical implementation remains open.
+- **Photograph storage provider:** File-based storage is established; the concrete storage location/provider remains open.
+- **Idempotency implementation:** The required behavior is established; the implementation remains open.
+- **Concurrency implementation:** Stale updates must be detected; the concrete EF Core mechanism remains open.
 
----
+## 3. Superseded decisions
 
-# 6. Deferred and future considerations
+No decisions have been superseded.
 
-The following items have intentionally not been committed to the initial implementation.
+## 4. Future considerations
+
+These items are not committed to the initial release. IDs and their order are stable.
 
 | ID | Topic | Status |
 |---|---|---|
@@ -496,22 +268,18 @@ The following items have intentionally not been committed to the initial impleme
 | FUT-009 | Advanced APIs and integrations | Future consideration |
 | FUT-010 | Advanced analytics | Future consideration |
 
-Customer self-service will require further consideration of prepayment or customer-specific trust rules because customer reservations are immediately confirmed upon creation.
+Customer self-service requires further consideration of prepayment or customer-specific trust rules because Customer use reservations are immediately confirmed.
 
-Database provider and hosting selection are also deferred.
+The possibility of automated email and push notifications is recorded in `PROJECT.md` as an uncommitted future enhancement. It has not been assigned a FUT ID or promoted to a committed future consideration.
 
----
+## 5. Decision history
 
-# 7. Decision history
-
-This document is maintained throughout the project.
+This log records decisions that have been explicitly accepted. Proposals must never be recorded as accepted decisions without explicit agreement.
 
 When an accepted decision changes:
-- Update the existing decision's status to Superseded.
+- Mark the existing decision Superseded.
 - Preserve its original content and rationale.
-- Create a new decision with a new ID.
+- Create a new decision with a new permanent ID.
 - Reference the superseded decision where appropriate.
 
-New decisions should receive the next available ID.
-
-Proposals must never be recorded as accepted decisions without explicit agreement.
+New decisions receive the next available DEC ID. Feature IDs are defined in `PROJECT.md` and reused here without creating a separate registry.

@@ -17,11 +17,9 @@ Database provider and hosting environment have not yet been selected.
 
 ## Project status
 
-**Status: Planning and requirements clarification.**
+**Status: Initial application scaffolding established.**
 
-Implementation has not started.
-
-Business requirements and initial architecture are being clarified before development begins.
+The core OLAF business functionality has not yet been implemented. Requirements and architecture are documented before feature development begins.
 
 ## Documentation
 
@@ -31,7 +29,6 @@ Business requirements and initial architecture are being clarified before develo
 | [DECISIONS.md](DECISIONS.md) | Accepted business and architectural decisions |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Technical architecture and design |
 | [ROADMAP.md](ROADMAP.md) | Development milestones and progress |
-| [SESSION.md](SESSION.md) | Current session context and handover |
 
 ## Development principles
 
