@@ -245,7 +245,7 @@ Cleaning reservations have four states:
 - **Correction requested:** The manager requested corrections.
 - **Approved:** The manager accepted the completed cleaning.
 
-Manager approval is mandatory. Staff completion alone does not mean that cleaning is approved.
+Cleaning staff may move an assigned Cleaning reservation from Pending or Correction requested to Completed. Managers review Completed reservations and may move them to Approved or Correction requested. Manager approval is mandatory; staff completion alone does not mean that cleaning is approved.
 
 When corrections are requested, the task becomes available to its assigned staff member again. The staff member corrects the specified steps and resubmits it for manager approval. This cycle may repeat until approval.
 
@@ -313,7 +313,7 @@ At minimum, audit records must capture:
 - When it happened.
 - Previous and new values where appropriate.
 
-Relevant events include reservation creation, modification and cancellation; reservation date, price and type changes; cleaning creation and cancellation; assignment changes; status transitions; completion submissions; manager approvals; correction requests; affected checklist steps; and resubmissions.
+Relevant events include reservation creation, modification and cancellation; reservation date, price and type changes; Cleaning reservation creation, modification and cancellation; assignment changes; status transitions; completion submissions; manager approvals; correction requests; affected checklist steps; and resubmissions.
 
 The exact audit implementation is not prescribed here.
 
