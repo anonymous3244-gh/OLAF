@@ -19,8 +19,6 @@ Decision IDs are permanent and must never be reused. When a decision changes, pr
 ### DEC-001 — Initial deployment scope
 - **Date:** 2026-11-01
 - **Status:** Accepted
-- **Related feature:** FAC
-
 Initially serve one business. Multi-tenant support remains a future possibility. Use generic domain concepts where appropriate to avoid unnecessary coupling to one business.
 
 ### DEC-002 — Development principles
@@ -70,7 +68,7 @@ Customer use reservations created by managers are confirmed immediately; there i
 - **Status:** Accepted
 - **Related feature:** AVL
 
-Active reservations of any type cannot overlap for the same facility. Managers cannot override conflicts. A facility can be taken Offline only after affected future customer reservations have been handled.
+Active reservations of any type cannot overlap for the same facility. Managers cannot override conflicts. A facility can be taken Offline only after affected future Customer use reservations have been handled.
 
 ### DEC-009 — Cleaning between Customer use reservations
 - **Date:** 2026-11-01
