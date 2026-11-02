@@ -124,7 +124,7 @@ Cancelled reservations:
 
 Cancellation changes the cancellation state only; it does not change the occupied time period and therefore does not require availability validation.
 
-Modifying or cancelling a Customer use reservation must also handle its associated Cleaning reservation as defined in section 9. Related changes must succeed together or be rolled back together.
+Modifying or cancelling a Customer use reservation must also handle its associated Cleaning reservation as defined in Cleaning and preparation (CLN). Related changes must succeed together or be rolled back together.
 
 Automatic changes to associated cleaning are permitted only before the Customer use reservation starts. Once it has started, it cannot be modified or cancelled in a way that requires changing its associated Cleaning reservation. Managers may independently edit Cleaning reservations when necessary.
 
