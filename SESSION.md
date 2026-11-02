@@ -1,16 +1,23 @@
 # OLAF — Session Handover
 
-Last updated: 2026-11-01
+Last updated: 2026-11-02
 
 ## 1. Current project status
 
-**Phase:** Requirements clarification and initial architecture (Phase 0).
+**Phase:** Transition from initial architecture to application foundation (Phase 0 → Phase 1).
 
-**Implementation has not started.**
+The initial solution structure and web application scaffold have been established.
 
-The initial requirements, accepted decisions, architecture and development roadmap are documented.
+The repository currently contains:
+- A .NET solution with separate Application, Domain and Infrastructure projects.
+- Corresponding unit-test projects.
+- An ASP.NET Core Razor Pages web application.
+- Initial ASP.NET Core Identity and Entity Framework Core integration.
+- An initial Identity database migration.
 
-The next objective is to resolve the remaining implementation-blocking questions before starting development.
+**Core OLAF business functionality has not yet been implemented.**
+
+The current implementation is primarily framework and application scaffolding. The domain model, application use cases and operational workflows remain to be developed.
 
 ## 2. Technology stack
 
@@ -23,7 +30,9 @@ The next objective is to resolve the remaining implementation-blocking questions
 | Authentication | ASP.NET Core Identity |
 | Version control | Git / GitHub |
 
-Database provider and hosting environment remain undecided.
+SQL Server is currently configured in the web application scaffold, but the database provider has not yet been formally established as an accepted architectural decision.
+
+The hosting environment also remains undecided.
 
 ## 3. Documentation — source of truth
 
@@ -34,15 +43,19 @@ Always consult the repository documents before making assumptions:
 | `README.md` | Project overview and navigation |
 | `PROJECT.md` | Functional requirements |
 | `DECISIONS.md` | Authoritative accepted decisions |
-| `ARCHITECTURE.md` | Technical architecture |
-| `ROADMAP.md` | Development phases and progress |
-| `SESSION.md` | Current session handover |
+| `ARCHITECTURE.md` | Technical architecture and design principles |
+| `ROADMAP.md` | Development phases, milestones and progress |
+| `SESSION.md` | Current development state and handover |
 
 `PROJECT.md` and `DECISIONS.md` take precedence over historical discussions and session notes.
 
-Do not duplicate their contents here.
+`ARCHITECTURE.md` defines architectural principles and boundaries.
 
-## 4. Important context
+`ROADMAP.md` defines implementation priorities and sequencing.
+
+Do not unnecessarily duplicate the contents of these documents.
+
+## 4. Important project context
 
 - OLAF initially serves one business.
 - Initial roles: Administrator, Rental manager and Cleaning staff.
@@ -54,40 +67,72 @@ Do not duplicate their contents here.
 - Reservation operations involving associated customer and cleaning reservations must be atomic.
 - Cleaning requires explicit staff completion and mandatory manager approval.
 
-See `PROJECT.md` and `DECISIONS.md` for the complete requirements and business rules.
+These are established business requirements, not implementation assumptions.
 
-## 5. Outstanding work
+See `PROJECT.md` and `DECISIONS.md` for the complete requirements and accepted business rules.
 
-Phase 0 is not yet complete.
+## 5. Architectural direction
 
-Remaining architectural and technical questions include:
+OLAF follows a pragmatic, contract-driven, modular architecture.
 
-- Database provider and hosting.
-- Solution/project structure and database schema.
-- Reservation concurrency and idempotency implementation.
-- File storage and background processing.
-- Notification delivery.
-- Detailed authorization policies.
+Important principles:
 
-Outstanding functional questions and their current status are maintained in `PROJECT.md` and `DECISIONS.md`.
+- Capability-oriented design.
+- Explicit contracts at meaningful architectural boundaries.
+- Dependency inversion and provider independence.
+- Dependency injection and centralized composition.
+- Project boundaries based on meaningful responsibilities.
+- Reuse of established framework abstractions and libraries.
+- Avoidance of unnecessary abstractions and premature project fragmentation.
 
-## 6. Immediate next steps
+The current solution structure provides the initial foundation. It should evolve according to actual implementation needs rather than theoretical future requirements.
 
-1. Continue reviewing unresolved business requirements.
-2. Resolve implementation-blocking architectural decisions.
-3. Update `DECISIONS.md` when decisions are accepted.
-4. Update `ARCHITECTURE.md` and `ROADMAP.md` when their contents change.
-5. Complete Phase 0 before starting implementation.
+See `ARCHITECTURE.md` for the complete architectural guidance.
 
-## 7. Working preferences
+## 6. Outstanding work
 
-- Keep discussions concise and focused.
-- Explain important trade-offs.
-- Raise significant questions early.
+The following areas still require decisions or implementation:
+
+### Technical decisions
+- Confirm the database provider and hosting environment.
+- Review the initial solution structure and project dependencies.
+- Establish the application database model and migration strategy.
+- Define reservation concurrency and idempotency implementation.
+- Decide on file storage and background processing.
+- Define notification delivery.
+- Establish detailed authentication and authorization policies.
+
+### Implementation
+- Develop the initial domain model.
+- Implement application capabilities and use cases.
+- Establish infrastructure implementations.
+- Complete application authentication and role management.
+- Implement the initial facility and customer management functionality.
+- Establish automated unit and integration testing.
+
+Functional questions and accepted decisions are maintained in `PROJECT.md` and `DECISIONS.md`.
+
+## 7. Immediate next steps
+
+1. Review and finalize the development roadmap.
+2. Resolve implementation-blocking technical decisions.
+3. Confirm the database provider and hosting strategy.
+4. Establish the initial domain and application boundaries.
+5. Begin implementing the application foundation.
+6. Update milestone status as implementation progresses.
+
+Do not start implementing functionality based on unresolved assumptions.
+
+## 8. Working principles
+
+- Keep discussions focused and explain important trade-offs.
+- Raise significant questions before implementation.
 - Never silently turn proposals into accepted decisions.
 - Prefer simple, maintainable solutions.
 - Avoid premature abstractions and unnecessary complexity.
-- Keep documentation synchronized with project decisions.
+- Follow the architectural principles documented in `ARCHITECTURE.md`.
+- Develop incrementally and test business rules as they are implemented.
+- Keep project documentation synchronized with actual decisions and implementation progress.
 
 Repository: https://github.com/anonymous3244-gh/OLAF
 
