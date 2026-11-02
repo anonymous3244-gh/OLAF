@@ -111,7 +111,7 @@ Customer use reservations created by a manager are confirmed immediately. There 
 
 Customer use reservations do not require an explicit completed status. Once their end time passes, they are considered completed based on their timestamps.
 
-Cleaning reservations have a separate explicit completion and approval workflow defined in section 9.
+Cleaning reservations have a separate explicit completion and approval workflow defined in Cleaning and preparation (CLN).
 
 ### 6.4 Modification and cancellation
 
