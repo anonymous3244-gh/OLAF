@@ -1,143 +1,169 @@
 # OLAF — Project Requirements
 
-Last updated: 2026-11-01
+Last updated: 2026-11-03
+
+This document is the authoritative source for OLAF's functional requirements and business rules.
 
 ## 1. Purpose and scope
 
-OLAF is a mobile-first rental management application for managing bookable facilities, customer reservations and cleaning operations.
+OLAF is a mobile-first rental management application for managing bookable facilities, customer use, reservations and cleaning operations.
 
-The initial release serves one business and has three main user roles:
+The initial release serves one business. It supports facility and customer management, reservation templates, reservation and availability management, cleaning workflows, operational notifications, reporting and audit history.
 
-- **Administrator:** Manages users, permissions and application administration.
-- **Rental manager:** Manages facilities, reservations, customers and operational activities.
-- **Cleaning staff:** Views assigned cleaning reservations and performs cleaning tasks.
+Customers do not have access to OLAF in the initial release. Rental managers create and manage customer records and reservations.
 
-Customers do not have access to the application in the initial release. All customer reservations are managed by rental managers.
+## 2. Initial release
 
-The application should provide:
-- Facility and availability management.
-- Customer management.
-- Customer reservation management.
-- Reusable reservation templates.
-- Cleaning scheduling and management.
-- Operational monitoring and notifications.
-- Financial and operational reporting.
+The initial release includes the features defined in sections 3–13.
 
-## 2. Facilities
+Initial user roles are:
+- **Administrator:** Has all application permissions, including user and permission management.
+- **Rental manager:** Has all application permissions except user and permission management.
+- **Cleaning staff:** Can access only cleaning reservations assigned to them and perform the permitted cleaning workflow actions on those reservations.
+
+Customer self-service, multi-tenant support and other future possibilities are outside the initial release unless explicitly moved into scope through a new decision.
+
+## 3. Facilities (FAC)
 
 The application must support managing bookable facilities/units.
 
-Each facility should have configurable properties relevant to its operation.
-
-Planned functionality:
+Managers must be able to:
 - Create, edit and deactivate facilities.
 - Manage facility-specific reservation settings.
-- Configure mandatory cleaning duration.
 - Associate reservation templates with specific facilities.
 
-Cleaning duration is a mandatory facility setting. It represents the time required to clean the facility after customer use.
+Each facility must have a mandatory cleaning-duration setting. It represents the time required to clean the facility after Customer use. It determines the duration of automatically generated Cleaning reservations and is not a separate cleaning-buffer setting.
 
-This duration determines the length of automatically generated cleaning reservations. It is not a separate cleaning buffer setting.
+A facility can have multiple reservations throughout the same calendar day, provided all availability rules are satisfied.
 
-A facility can have multiple reservations throughout the same calendar day.
+## 4. Customers (CUS)
 
-## 3. Reservations
+Customer management is part of the initial release.
 
-### 3.1 Reservation types
+Managers must be able to:
+- Create and edit customer records.
+- Search and browse existing customers.
+- View customer reservation history.
+- Maintain internal comments and relevant customer information.
 
-Everything that occupies a facility is represented as a reservation.
+Potential customer information includes name, contact information, reservation history, internal comments and relevant operational information such as a risk assessment.
 
-Initial reservation types include:
+During reservation creation, the interface must provide:
+- A searchable dropdown for selecting an existing customer.
+- An action to create a customer without leaving the reservation form.
+- Automatic selection of the newly created customer after successful creation.
 
-- **Customer use:** A facility reserved by a customer.
-- **Cleaning:** A facility reserved for cleaning and preparation.
-- **Offline/unavailable:** A facility unavailable due to maintenance, renovations, temporary closure or similar reasons.
+Customer creation may use an inline or modal interface. The objective is to avoid interrupting reservation creation.
 
-Other purposes, such as promotional gifts or owner use, may also be represented through appropriate reservation types or purposes.
+Customers cannot access the application or create their own reservations in the initial release.
 
-All reservation types share common concepts:
-- Facility.
-- Start date/time.
-- End date/time.
-- Type/purpose.
-- Optional price.
-- Optional assignee.
+## 5. Reservation templates (TMP)
 
-Price and assignee are not applicable to every reservation type.
-
-### 3.2 Reservation times
-
-Reservations must support arbitrary start and end date/time values.
-
-Supported scenarios include:
-- Reservations lasting a few hours.
-- Reservations lasting 24 hours or longer.
-- Overnight reservations.
-- Manually entered start and end times.
-
-Reservations must not be artificially restricted to predefined durations.
-
-### 3.3 Reservation templates
-
-Managers should be able to define reusable reservation templates containing:
+Managers must be able to define reusable reservation templates containing:
 - Name.
 - Start time.
 - End time.
 - Price.
 
-Selecting a template should populate the reservation form with its predefined values.
-
-Managers must still be able to modify these values or enter completely custom reservation times and prices.
-
 Templates may be associated with specific facilities.
 
-Templates must support overnight periods and 24-hour reservations.
+Selecting a template populates the reservation form with its predefined values. Managers can modify those values or enter completely custom reservation times and prices.
 
-### 3.4 Reservation confirmation
+Templates must support overnight periods and 24-hour reservations. They must not impose artificial restrictions on reservation duration.
 
-All customer reservations are confirmed immediately when created by a manager.
+The term **reservation template** is used; *shift template* is not the preferred term.
 
-There is no pending reservation state in the initial release.
+## 6. Reservations (RES)
 
-### 3.5 Availability and conflicts
+### 6.1 Reservation model and types
 
-Two active reservations must never overlap for the same facility.
+Everything that occupies a bookable facility is represented as a reservation.
 
-This applies to all reservation types, including customer use, cleaning and offline periods.
+The initial release has exactly three reservation types:
 
-Consecutive customer reservations are not allowed because cleaning must take place between customer uses.
+- **Customer use:** A facility reserved for customer bookings, owner use or complimentary stays. These are purposes or contexts of Customer use, not separate reservation types.
+- **Cleaning:** A facility reserved for cleaning and preparation. Cleaning reservations may be generated automatically or created independently.
+- **Offline:** A facility unavailable due to maintenance, renovations, temporary closure or similar reasons. Offline reservations do not generate cleaning reservations.
 
-The system must validate availability when:
-- Creating reservations.
-- Modifying reservations.
-- Creating cleaning reservations.
-- Creating offline/unavailable periods.
+Reservations share common concepts:
+- Facility.
+- Start date/time.
+- End date/time.
+- Type and, where applicable, purpose.
+- Optional price.
+- Optional assignee.
 
-Simultaneous booking attempts must be handled safely. Only one conflicting reservation can succeed.
+Price and assignee are not applicable to every reservation type.
 
-Managers cannot override existing reservation conflicts.
+### 6.2 Reservation times
 
-If a facility must be taken offline despite existing future reservations, the manager must first contact affected customers, cancel or reschedule their reservations and then create the offline reservation.
+Reservations must support arbitrary start and end date/time values, including:
+- A few hours.
+- 24 hours or longer.
+- Overnight periods.
+- Manually entered custom periods.
 
-### 3.6 Modification and cancellation
+Reservations must not be artificially restricted to predefined durations.
 
-Managers can modify and cancel reservations, subject to availability and the associated cleaning workflow.
+### 6.3 Confirmation and completion
 
-Cancelled reservations remain in the database for historical and reporting purposes but no longer block availability.
+Customer use reservations created by a manager are confirmed immediately. There is no pending Customer use reservation state in the initial release.
 
-Customer reservation modifications must also account for their associated cleaning reservation (see section 4).
+Customer use reservations do not require an explicit completed status. Once their end time passes, they are considered completed based on their timestamps.
 
-Cancellation does not change reservation dates or times. It simply changes the cancellation state, so no availability validation is necessary.
+Cleaning reservations have a separate explicit completion and approval workflow defined in section 9.
 
-## 4. Cleaning and preparation
+### 6.4 Modification and cancellation
 
-Cleaning is a core part of OLAF.
+Managers can modify and cancel reservations subject to the availability rules and the associated cleaning workflow.
 
-### 4.1 Cleaning reservations
+Cancelled reservations:
+- Remain in the database for historical and reporting purposes.
+- No longer block availability.
+- Retain their original start and end times.
+
+Cancellation changes the cancellation state only; it does not change the occupied time period and therefore does not require availability validation.
+
+Modifying or cancelling a Customer use reservation must also handle its associated Cleaning reservation as defined in section 9. Related changes must succeed together or be rolled back together.
+
+Automatic changes to associated cleaning are permitted only before the Customer use reservation starts. Once it has started, it cannot be modified or cancelled in a way that requires changing its associated Cleaning reservation. Managers may independently edit Cleaning reservations when necessary.
+
+### 6.5 Idempotency and concurrent changes
+
+Repeating the same logical reservation operation must not create duplicate reservations or duplicate associated Cleaning reservations.
+
+The application must detect stale updates when multiple managers edit the same reservation. Changes must never silently overwrite another manager's modifications.
+
+## 7. Availability and conflicts (AVL)
+
+Two active reservations must never overlap for the same facility. This applies to all three reservation types: Customer use, Cleaning and Offline.
+
+Cancelled reservations do not block availability.
+
+A facility cannot transition directly from one Customer use reservation to another without the required Cleaning reservation. The required cleaning time must be available between Customer use reservations.
+
+Availability/conflict validation is required when:
+- Creating a reservation.
+- Modifying a reservation.
+- Creating a standalone Cleaning reservation.
+- Creating an Offline reservation.
+- Adjusting the associated Cleaning reservation when a Customer use reservation is modified.
+
+Creating a Customer use reservation and its associated Cleaning reservation is one atomic operation. Both resulting reservations must pass availability validation; if either conflicts, neither is created.
+
+Simultaneous booking attempts must be handled safely so that only one conflicting operation can succeed. Managers cannot override existing reservation conflicts.
+
+If a facility must be taken Offline despite existing future reservations, the manager must first contact affected customers and cancel or reschedule their reservations before creating the Offline reservation.
+
+Cancellation does not require availability validation because it does not introduce or modify an occupied time period.
+
+## 8. Cleaning and preparation (CLN)
+
+### 8.1 Cleaning reservations
 
 Cleaning is represented by an actual reservation.
 
-A cleaning reservation has:
+A Cleaning reservation has:
 - Facility.
 - Start date/time.
 - End date/time.
@@ -145,254 +171,173 @@ A cleaning reservation has:
 - Optional price/cost.
 - Optional assigned cleaning staff member.
 
-A cleaning reservation has a fixed time slot and a clearly defined deadline equal to its end time.
+A Cleaning reservation has a fixed time slot and a deadline equal to its end time. It does not automatically extend until the next Customer use reservation. Cleaning reservations occupy the facility and participate in availability/conflict validation.
 
-It does not automatically extend until the next customer reservation.
+### 8.2 Automatic generation and relationship to Customer use
 
-Cleaning reservations occupy the facility and participate in availability/conflict validation.
+Every Customer use reservation automatically generates exactly one associated Cleaning reservation, and the Customer use reservation references that associated Cleaning reservation.
 
-### 4.2 Customer and cleaning reservation relationship
+The generated Cleaning reservation:
+- Starts when the Customer use reservation ends.
+- Has a duration equal to the facility's configured mandatory cleaning duration.
+- Has a fixed end time, which is its deadline.
+- Is initially unassigned.
 
-Every customer reservation automatically generates exactly one associated cleaning reservation.
+Cleaning reservations are generated eagerly, even when no subsequent Customer use reservation exists. Facilities should be cleaned as early as possible and remain ready for future customers.
 
-Every customer reservation must reference its associated cleaning reservation.
+The following operations are atomic:
 
-Standalone cleaning reservations are also supported. Managers can create as many as necessary, without requiring an associated customer reservation.
+**Creation**
+- Create the Customer use reservation.
+- Create exactly one associated Cleaning reservation.
+- Leave the generated Cleaning reservation unassigned.
+- Validate availability for both reservations.
+- If either reservation conflicts, create neither.
 
-The following operations must be atomic:
-
-**Creating a customer reservation:**
-- Create the customer reservation.
-- Automatically create its cleaning reservation.
-- Initially leave the cleaning reservation unassigned.
-
-Both reservations must pass availability validation. If either reservation conflicts with an existing active reservation, neither reservation is created.
-
-**Cancelling a customer reservation:**
-- Cancel the customer reservation.
-- Cancel its associated cleaning reservation.
-
-Cancellation simply changes the cancellation state of both reservations. Their dates and times remain unchanged, and no availability validation is necessary.
-
-**Modifying a customer reservation:**
-- Modify the customer reservation.
-- Automatically adjust its associated cleaning reservation.
+**Modification**
+- Modify the Customer use reservation and automatically adjust its associated Cleaning reservation.
 - Validate all resulting conflicts.
+- Succeed together or roll back together.
+- Perform automatic associated-cleaning changes only before the Customer use reservation starts.
 
-All related changes must succeed together or be rolled back.
+Once a Customer use reservation has started, it cannot be modified or cancelled in a way that requires changing its associated Cleaning reservation.
 
-Automatic modifications to the associated cleaning reservation are only permitted if the customer reservation has not started.
+**Cancellation**
+- Cancel the Customer use reservation and its associated Cleaning reservation together.
+- Preserve both reservations' original dates and times.
+- Do not perform availability validation.
 
-Once a customer reservation has started, it cannot be cancelled or modified in a way that requires changing its associated cleaning reservation.
+Standalone Cleaning reservations do not require an associated Customer use reservation. Managers may create as many as necessary, subject to availability. Managers can independently edit or cancel standalone Cleaning reservations.
 
-The cleaning reservation must never take place before the customer reservation ends.
+### 8.3 Assignment
 
-Managers can independently edit cleaning reservations when necessary.
+Automatically generated Cleaning reservations are initially unassigned.
 
-### 4.3 Cleaning scheduling
+Managers manually assign one cleaning staff member and may change the assignment when necessary.
 
-Facilities should be cleaned eagerly.
+Automatic staff scheduling based on working shifts and workload is outside the initial release.
 
-Every customer reservation generates a cleaning reservation immediately, even when no subsequent customer reservation exists.
+### 8.4 Staff workflow
 
-The cleaning reservation:
-- Starts when the customer reservation ends.
-- Has a duration equal to the facility's configured cleaning duration.
-- Has an explicit, fixed end time.
-
-The objective is to ensure that facilities are cleaned and ready for the next customer as early as possible.
-
-### 4.4 Cleaning staff assignment
-
-INITIAL APPROACH:
-
-- Cleaning reservations are created automatically as unassigned.
-- Managers manually assign one cleaning staff member.
-- Managers can change assignments when necessary.
-
-Automatic staff scheduling based on working shifts and workload is deferred.
-
-### 4.5 Cleaning workflow
-
-Cleaning staff should be able to:
-- View their assigned cleaning reservations.
+Cleaning staff must be able to:
+- View only their assigned Cleaning reservations.
 - See upcoming cleaning deadlines.
-- Open a cleaning reservation.
+- Open an assigned Cleaning reservation.
 - Follow a step-by-step cleaning checklist.
 - View reference photographs for checklist items.
 - Capture completion photographs.
-- Mark cleaning as completed.
-- Submit the completed cleaning session for manager review.
+- Mark cleaning as completed and submit it for manager review.
+- Reopen a task when corrections have been requested, correct the specified checklist steps and resubmit it.
 
-A future mobile camera workflow may include a semi-transparent reference photograph overlay to help staff reproduce the desired result.
+A future mobile camera workflow may include a semi-transparent reference-photograph overlay to help staff reproduce the desired result.
 
-Managers should be able to:
-- Monitor upcoming and overdue cleaning reservations.
+### 8.5 Manager workflow and states
+
+Managers must be able to:
+- Monitor upcoming and overdue Cleaning reservations.
 - Review submitted cleaning sessions.
 - Approve completed cleaning.
-- Request corrections when necessary.
+- Request corrections to specific checklist steps.
 
-Manager approval is mandatory for every completed cleaning reservation.
-
-Staff completion alone does not mean the cleaning operation is fully approved.
-
-If a cleaning reservation reaches its end time without being marked as completed, managers must receive a warning/notification.
-
-### 4.6 Cleaning approval workflow
-
-Cleaning reservations have the following states:
-
+Cleaning reservations have four states:
 - **Pending:** Cleaning has not yet been completed.
 - **Completed:** Cleaning staff submitted the task for manager approval.
-- **Correction requested:** Manager requested corrections to specific checklist steps.
-- **Approved:** Manager accepted the completed cleaning.
+- **Correction requested:** The manager requested corrections.
+- **Approved:** The manager accepted the completed cleaning.
 
-When corrections are requested:
-- The cleaning reservation becomes available to the assigned cleaning staff member again.
-- The staff member can reopen the task.
-- The staff member corrects the specified checklist steps.
-- The staff member resubmits the cleaning for manager approval.
+Manager approval is mandatory. Staff completion alone does not mean that cleaning is approved.
 
-The workflow can repeat until the manager approves the cleaning.
+When corrections are requested, the task becomes available to its assigned staff member again. The staff member corrects the specified steps and resubmits it for manager approval. This cycle may repeat until approval.
 
-There are no automatic approvals or complicated escalation mechanisms if a manager fails to review a submission.
+There are no automatic approvals or complex escalation mechanisms if a manager does not review a submission. Managers and cleaning staff are responsible for ensuring cleaning is completed and approved before the next customer arrives. If a facility is not ready for an upcoming customer, the responsible people must resolve the situation directly.
 
-Managers and cleaning staff are responsible for ensuring that cleaning is completed and approved before the next customer arrives.
-
-If a customer is due to arrive and the facility is not ready, the manager and cleaning staff must resolve the situation directly.
-
-The application should provide visibility into:
+The application must provide visibility into:
 - Upcoming cleaning deadlines.
-- Overdue cleaning reservations.
+- Overdue Cleaning reservations.
 - Cleaning awaiting manager approval.
 - Cleaning requiring corrections.
 
-Important cleaning events must be recorded in the audit history, including submissions, approvals, correction requests, affected checklist steps and resubmissions.
+If a Cleaning reservation reaches its end time without being marked Completed, managers must receive a warning/notification.
 
-### 4.7 Customer reservation completion
+## 9. Users and permissions (USR)
 
-Customer reservations do not require an explicit completed status.
+The initial roles and permissions are:
 
-Once their end time passes, they are considered completed based on their timestamps.
+- **Administrator:** All application permissions, including user and permission management.
+- **Rental manager:** All application permissions except user and permission management.
+- **Cleaning staff:** Access only to Cleaning reservations assigned to that staff member, with permission to perform the assigned cleaning workflow actions.
 
-Cleaning reservations are different because their completion requires an explicit action from the assigned cleaning staff member, followed by mandatory manager approval.
+Customers have no direct application access in the initial release. Rental managers manage customer records and reservations.
 
-## 5. Customers
+Authorization must enforce these boundaries; hiding interface elements alone is not sufficient.
 
-Customer management is part of the initial release.
+## 10. Notifications (NTF)
 
-Managers should be able to:
-- Create customers.
-- Edit customer information.
-- Search and browse existing customers.
-- View customer reservation history.
-- Maintain internal comments and relevant customer information.
+The application must notify managers when a Cleaning reservation reaches its deadline without being marked Completed.
 
-Potential customer information includes:
-- Name.
-- Contact information.
-- Reservation history.
-- Internal comments.
-- Risk assessment or other relevant operational information.
-
-### 5.1 Customer selection during reservation creation
-
-The reservation creation interface should make customer selection and creation convenient.
-
-The proposed interface includes:
-- A searchable dropdown for selecting an existing customer.
-- A `+` action to create a new customer without leaving the reservation creation screen.
-- Automatic selection of the newly created customer after successful creation.
-
-An inline or modal customer creation interface would be suitable.
-
-The objective is to avoid interrupting the reservation creation workflow.
-
-## 6. Users and permissions
-
-Initial user roles:
-
-- Administrator.
-- Rental manager.
-- Cleaning staff.
-
-Rental managers are responsible for creating and managing customer reservations.
-
-Cleaning staff can access their assigned cleaning reservations and perform the cleaning workflow.
-
-Customers cannot access the application in the initial release.
-
-Permissions must ensure that users can only perform operations appropriate to their roles.
-
-## 7. Notifications
-
-The application must notify managers when a cleaning reservation reaches its deadline without being completed.
-
-Other notification requirements may include:
-- Changes to assigned cleaning reservations.
+Other possible notification events include:
+- Changes to assigned Cleaning reservations.
 - Cleaning assignment changes.
 - Cleaning completion submissions.
 - Requests for cleaning corrections.
 
-Notification channels and escalation rules remain to be defined.
+Notification channels and escalation rules remain to be defined. No automatic escalation or approval mechanisms are planned for overdue manager reviews.
 
-No automatic escalation or approval mechanisms are planned for overdue manager reviews.
+Automated email and push notifications are a possible future enhancement, not a committed initial-release requirement.
 
-## 8. Reporting
+## 11. Reporting (RPT)
 
-Planned reporting periods:
+The initial reporting periods are:
 - Weekly.
 - Monthly.
 - Yearly.
 
-Potential reports include:
+Reports should cover:
 - Revenue.
 - Reservation counts.
 - Facility occupancy.
 - Cleaning workload.
 - Cleaning completion rates.
 
-Reporting definitions and calculations must be established before implementation.
+Customer revenue must be distinguished from cleaning costs and Offline reservations, which are non-revenue facility reservations.
 
-Customer revenue must be distinguished from cleaning costs and offline reservations.
+Reporting definitions and calculations must be agreed before implementation.
 
-## 9. Future functionality
+## 12. Audit history (AUD)
 
-The following are outside the initial release scope.
+Important reservation and cleaning workflow changes must be recorded in an audit history.
 
-### 9.1 Customer self-service
+At minimum, audit records must capture:
+- Who performed the operation.
+- What changed.
+- When it happened.
+- Previous and new values where appropriate.
 
-Allow customers to create and manage their own reservations.
+Relevant events include reservation creation, modification and cancellation; reservation date, price and type changes; cleaning creation and cancellation; assignment changes; status transitions; completion submissions; manager approvals; correction requests; affected checklist steps; and resubmissions.
 
-Before introducing this functionality, payment/prepayment or customer-specific trust rules must be considered because reservations are confirmed immediately upon creation.
+The exact audit implementation is not prescribed here.
 
-### 9.2 Android caller identification
+## 13. General requirements
 
-A native Android companion application for identifying incoming customer calls against the OLAF customer database.
+- The application must provide a responsive, mobile-friendly experience, with particular attention to cleaning staff using small screens during daily work.
+- Store timestamps in UTC, display times in the browser's local time zone, and perform appropriate time-zone conversions at application boundaries.
+- Prevent repeated submissions of the same logical reservation operation from creating duplicates.
+- Detect stale reservation updates rather than silently overwriting concurrent changes.
+- Photographs should be stored as files rather than database blobs. The database should store file references and relevant metadata; the storage implementation remains undecided.
 
-Potential information displayed:
-- Customer name.
-- Risk score.
-- Internal comments.
-- Relevant reservation history.
+## 14. Future possibilities
 
-### 9.3 Additional possibilities
+The following items are outside the initial release. Their presence here does not by itself commit them to a delivery date:
 
-- External booking-channel integrations.
-- Payments and invoicing.
-- Automated email and push notifications.
-- Automatic cleaning staff scheduling based on working shifts and workload.
-- Advanced analytics and reporting.
-- Multi-tenant support.
-- Advanced external APIs.
+1. Automatic cleaning staff scheduling based on working shifts and workload.
+2. WebAuthn/passkeys.
+3. mTLS.
+4. Customer self-service reservations. Before introducing this, consider prepayment or customer-specific trust rules because Customer use reservations are immediately confirmed.
+5. Payments and invoicing.
+6. A native Android caller-identification companion application connected to the OLAF customer database, potentially showing customer name, risk score, internal comments and relevant reservation history.
+7. External booking-channel integrations.
+8. Multi-tenant support.
+9. Advanced external APIs and integrations.
+10. Advanced analytics and reporting.
 
-## 10. Project status
-
-Implementation has NOT started.
-
-Business requirements and initial architecture are being clarified before development begins.
-
-See:
-- [DECISIONS.md](DECISIONS.md) for accepted business and architectural decisions.
-- [ARCHITECTURE.md](ARCHITECTURE.md) for technical design.
-- [ROADMAP.md](ROADMAP.md) for development milestones.
+Database provider and hosting selection remain deferred technical choices, not future product features.
