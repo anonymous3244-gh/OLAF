@@ -24,8 +24,6 @@ Initially serve one business. Multi-tenant support remains a future possibility.
 ### DEC-002 — Development principles
 - **Date:** 2026-11-01
 - **Status:** Accepted
-- **Related features:** All
-
 Prefer simple, maintainable solutions; avoid premature abstractions; preserve future options where reasonably possible; discuss important decisions before implementation; develop incrementally and test each milestone; maintain documentation alongside implementation.
 
 ### DEC-003 — Mobile-first experience
@@ -82,7 +80,7 @@ A facility cannot transition directly from one Customer use reservation to anoth
 - **Status:** Accepted
 - **Related features:** RES, AVL
 
-Cancellation changes the cancellation state without deleting the reservation or changing its original dates and times. Cancelled reservations do not block availability, so cancellation does not require availability validation.
+Cancellation sets the reservation's cancellation state (`IsCancelled = true`) without deleting it or changing its original dates and times. Cancelled reservations do not block availability, so cancellation does not require availability validation.
 
 ### DEC-011 — Customer use completion is time-based
 - **Date:** 2026-11-01
@@ -103,7 +101,7 @@ Each facility has one mandatory cleaning-duration setting. There is no separate 
 - **Status:** Accepted
 - **Related features:** RES, CLN
 
-Generate exactly one associated Cleaning reservation for every Customer use reservation. Generate it eagerly, starting at the end of Customer use, with the facility's configured duration, a fixed deadline and no initial assignee. This ensures facilities can be cleaned as early as possible.
+Generate exactly one associated Cleaning reservation for every Customer use reservation, and keep a reference to the associated Cleaning reservation on the Customer use reservation. Generate it eagerly, starting at the end of Customer use, with the facility's configured duration, a fixed deadline and no initial assignee. This ensures facilities can be cleaned as early as possible.
 
 ### DEC-014 — Standalone Cleaning reservations
 - **Date:** 2026-11-01
