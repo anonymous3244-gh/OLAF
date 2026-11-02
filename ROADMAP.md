@@ -34,6 +34,7 @@ This roadmap defines implementation order and completion outcomes. Functional re
 - [x] Establish the approved documentation structure and feature IDs.
 - [x] Restructure the requirements, decision log and architecture guidance.
 - [x] Complete the final cross-document consistency review.
+- [ ] Resolve any decisions necessary to begin Phase 1.
 
 **Completion criteria:** Requirements and initial architecture are sufficiently defined to begin implementation without guessing critical business rules.
 
