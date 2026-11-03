@@ -201,7 +201,7 @@ The initial roles are Administrator, Rental manager and Cleaning staff. Authoriz
 - **Status:** Accepted
 - **Related architecture:** ARCHITECTURE.md
 
-The initial stack is C#/.NET 10, ASP.NET Core Razor Pages, HTMX, Entity Framework Core, ASP.NET Core Identity and Git/GitHub. Database provider and hosting environment remain undecided.
+The initial stack is C#/.NET 10, ASP.NET Core Razor Pages, HTMX, Entity Framework Core, ASP.NET Core Identity and Git/GitHub. SQL Server Express is the selected database provider. The preferred deployment model is a standalone .NET application hosted by Kestrel behind a reverse proxy such as Nginx; containerization remains an option.
 
 ### DEC-028 — UTC timestamp storage
 - **Date:** 2026-11-01
@@ -238,10 +238,29 @@ Maintain an audit history recording who performed an operation, what changed, wh
 
 Store photographs as files rather than database blobs. Store file references and relevant metadata in the database. The storage implementation remains undecided.
 
+### DEC-033 — SQL Server Express database provider
+- **Date:** 2026-11-03
+- **Status:** Accepted
+- **Related architecture:** ARCHITECTURE.md
+
+Use SQL Server Express as the initial database engine and Microsoft's EF Core SQL Server provider. Keep provider-specific configuration and implementation details at the Infrastructure/composition boundary. Prefer provider-neutral EF Core and LINQ for ordinary data access, and avoid unnecessary SQL Server-specific dependencies so a future PostgreSQL migration remains feasible. Provider portability is a desirable option, not a requirement; do not introduce speculative abstraction or compromise the initial implementation to guarantee it.
+
+### DEC-034 — Standalone Kestrel deployment behind a reverse proxy
+- **Date:** 2026-11-03
+- **Status:** Accepted
+
+The preferred deployment model is a standalone .NET application hosted by Kestrel behind a reverse proxy such as Nginx. Containerization may be introduced later but is not a requirement for the initial deployment. The exact hosting provider and server environment remain open.
+
+### DEC-035 — Deployment-time initial Administrator provisioning
+- **Date:** 2026-11-03
+- **Status:** Accepted
+- **Related feature:** USR
+
+Provision the initial Administrator account as part of deployment/first database initialization, without a permanent public installer page or endpoint. Use the username `admin` and a securely generated initial password or a password supplied through a protected deployment secret. Require the Administrator to change the initial password at first sign-in. Never hard-code a known default password, expose the password through a public endpoint, or write it to logs. Bootstrap must be safe to retry and must not reset an existing Administrator's credentials on subsequent starts.
+
 ## 2. Deferred decisions
 
-- **Database provider:** Selection is deferred.
-- **Hosting environment:** Selection is deferred.
+- **Hosting environment:** The deployment model is selected; the concrete hosting provider and server environment remain open.
 - **Audit implementation:** The required audit information and events are established; the technical implementation remains open.
 - **Photograph storage provider:** File-based storage is established; the concrete storage location/provider remains open.
 - **Idempotency implementation:** The required behavior is established; the implementation remains open.
