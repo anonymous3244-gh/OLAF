@@ -11,13 +11,13 @@ The application provides a centralized place to manage facility availability, co
 - **Dynamic interactions:** HTMX
 - **Data access:** Entity Framework Core
 - **Authentication:** ASP.NET Core Identity
+- **Database:** SQL Server Express with Entity Framework Core
+- **Deployment:** Standalone .NET/Kestrel application behind a reverse proxy (preferred); containerization remains optional
 - **Version control:** Git / GitHub
-
-Database provider and hosting environment have not yet been selected.
 
 ## Project status
 
-**Status: Initial application scaffolding established.**
+**Status: Phase 0 complete; Phase 1 not started.**
 
 The core OLAF business functionality has not yet been implemented. Requirements and architecture are documented before feature development begins.
 
