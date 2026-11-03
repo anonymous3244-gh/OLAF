@@ -340,4 +340,4 @@ The following items are outside the initial release. Their presence here does no
 9. Advanced external APIs and integrations.
 10. Advanced analytics and reporting.
 
-Database provider and hosting selection remain deferred technical choices, not future product features.
+The selected database provider and preferred deployment model are recorded in `DECISIONS.md`; the concrete hosting environment remains open.
