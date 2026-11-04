@@ -13,7 +13,7 @@ The architecture prioritizes maintainability, cohesion, reusability and independ
 - **Capability-oriented design:** Organize functionality around meaningful capabilities and responsibilities.
 - **Contract-driven design:** Define explicit contracts at meaningful architectural boundaries.
 - **Dependency inversion:** Consumers depend on abstractions rather than concrete implementations.
-- **Provider independence:** Multiple implementations may provide the same capability without requiring changes to consumers.
+- **Provider independence:** Keep persistence concerns and provider-specific configuration within Infrastructure and composition boundaries. Prefer provider-neutral EF Core/LINQ for ordinary data access, and avoid unnecessary provider-specific dependencies. SQL Server Express is the initial provider; future PostgreSQL portability is desirable but not a requirement.
 - **Pragmatic modularity:** Project boundaries represent meaningful architectural responsibilities, not individual classes or interfaces.
 - **Separation of concerns:** Keep responsibilities distinct and place behavior with the project that owns it.
 - **Pragmatic reuse:** Prefer established platform and library capabilities where they adequately meet the need.
@@ -58,6 +58,8 @@ Not every responsibility requires a separate project. Related functionality shou
 Use dependency injection to connect consumers to implementations through the relevant contracts.
 
 Application entry points and other composition roots configure and register the implementations required by the application. Dependency registration and provider-specific configuration belong at these composition boundaries rather than being scattered through business logic.
+
+The initial persistence provider is SQL Server Express, configured through the EF Core SQL Server provider. Keep provider-specific setup and any unavoidable provider-specific queries in Infrastructure or the composition root. Do not introduce a generic database abstraction solely to anticipate a possible future provider change.
 
 ## 7. Reuse of existing libraries
 

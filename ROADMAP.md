@@ -6,7 +6,7 @@ Last updated: 2026-11-03
 
 Initial application scaffolding has been established. Core OLAF business functionality has not yet been implemented.
 
-Phase 0 is In progress. Phase 1 and all subsequent phases are Not started. The existing scaffold does not count as Phase 1 progress.
+Phase 0 is Complete. Phase 1 and all subsequent phases are Not started. The existing scaffold does not count as Phase 1 progress.
 
 This roadmap defines implementation order and completion outcomes. Functional requirements are maintained in `PROJECT.md`; accepted decisions are maintained in `DECISIONS.md`; technical architecture guidance is maintained in `ARCHITECTURE.md`.
 
@@ -14,7 +14,7 @@ This roadmap defines implementation order and completion outcomes. Functional re
 
 | Phase | Scope | Status |
 |---|---|---|
-| 0 | Requirements and architecture | In progress |
+| 0 | Requirements and architecture | Complete |
 | 1 | Application foundation | Not started |
 | 2 | Core data management | Not started |
 | 3 | Reservation management | Not started |
@@ -34,15 +34,15 @@ This roadmap defines implementation order and completion outcomes. Functional re
 - [x] Establish the approved documentation structure and feature IDs.
 - [x] Restructure the requirements, decision log and architecture guidance.
 - [x] Complete the final cross-document consistency review.
-- [ ] Resolve any decisions necessary to begin Phase 1.
+- [x] Resolve the decisions necessary to begin Phase 1, including database provider, deployment model and initial Administrator provisioning.
 
 **Completion criteria:** Requirements and initial architecture are sufficiently defined to begin implementation without guessing critical business rules.
 
 ### Phase 1 — Application foundation
 
 - Review and complete the .NET solution and application structure.
-- Select and configure the database provider and Entity Framework Core.
-- Configure ASP.NET Core Identity.
+- Configure SQL Server Express and the EF Core SQL Server provider.
+- Configure ASP.NET Core Identity, deployment-time initial Administrator provisioning and the mandatory first-login password change.
 - Implement the initial roles and authorization (USR).
 - Establish the responsive Razor Pages layout.
 - Integrate HTMX.
@@ -128,4 +128,4 @@ This roadmap defines implementation order and completion outcomes. Functional re
 
 ## 5. Current next step
 
-Complete Phase 0 by finalizing the project documentation, reviewing architectural guidance, and resolving only the decisions necessary to begin Phase 1.
+Begin Phase 1 — Application foundation. Complete the solution structure, configure SQL Server Express and EF Core, and implement end-to-end authentication and authorization.
