@@ -21,7 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 	options => options.UseSqlServer(connectionString));
 
 builder.Services
-	.AddIdentityCore<IdentityUser>()
+	.AddIdentityCore<ApplicationUser>()
 	.AddRoles<IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -31,7 +31,7 @@ using var scope = host.Services.CreateScope();
 
 var services = scope.ServiceProvider;
 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
 try
 {
@@ -57,11 +57,12 @@ try
 	if (await userManager.FindByEmailAsync(email) is not null) throw new NonAdminUserException(email);
 
 	var password = "Aa1!" + Convert.ToBase64String(RandomNumberGenerator.GetBytes(48));
-	var administrator = new IdentityUser
+	var administrator = new ApplicationUser
 	{
 		UserName = email,
 		Email = email,
-		EmailConfirmed = true
+		EmailConfirmed = true,
+		MustChangePassword = true,
 	};
 
 	var createResult = await userManager.CreateAsync(administrator, password);

@@ -1,4 +1,3 @@
-using OLAF.Application.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OLAF.Application.Authorization;
 using OLAF.Infrastructure.Persistence;
+using OLAF.Web.Extensions;
+using OLAF.Web.Identity;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,30 +25,48 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services
-	.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+	.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
 	.AddRoles<IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
+
 builder.Services.AddRazorPages();
 
 builder.Services.AddAuthorization(options =>
 {
-	options.FallbackPolicy = new AuthorizationPolicyBuilder()
+	options.DefaultPolicy = new AuthorizationPolicyBuilder()
 		.RequireAuthenticatedUser()
+		.RequireNoClaim(OlafClaimTypes.MustChangePassword, "true")
 		.Build();
+
+	options.FallbackPolicy = options.DefaultPolicy;
+
+	options.AddPolicy(
+		AuthorizationPolicies.MustChangePassword,
+		policy => policy
+			.RequireAuthenticatedUser()
+			.RequireClaim(OlafClaimTypes.MustChangePassword, "true"));
 
 	options.AddPolicy(
 		AuthorizationPolicies.Administrator,
-		policy => policy.RequireRole(ApplicationRoles.Administrator));
+		policy => policy
+			.RequireAuthenticatedUser()
+			.RequireRole(ApplicationRoles.Administrator)
+			.RequireNoClaim(OlafClaimTypes.MustChangePassword, "true"));
 
 	options.AddPolicy(
 		AuthorizationPolicies.Manager,
-		policy => policy.RequireRole(
-			ApplicationRoles.Administrator,
-			ApplicationRoles.RentalManager));
+		policy => policy
+			.RequireAuthenticatedUser()
+			.RequireRole(ApplicationRoles.Administrator, ApplicationRoles.RentalManager)
+			.RequireNoClaim(OlafClaimTypes.MustChangePassword, "true"));
 
 	options.AddPolicy(
 		AuthorizationPolicies.CleaningStaff,
-		policy => policy.RequireRole(ApplicationRoles.CleaningStaff));
+		policy => policy
+			.RequireAuthenticatedUser()
+			.RequireRole(ApplicationRoles.CleaningStaff)
+			.RequireNoClaim(OlafClaimTypes.MustChangePassword, "true"));
 });
 
 var app = builder.Build();

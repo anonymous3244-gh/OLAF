@@ -4,6 +4,6 @@ using Microsoft.EntityFrameworkCore;
 namespace OLAF.Infrastructure.Persistence;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-	: IdentityDbContext(options)
+	: IdentityDbContext<ApplicationUser>(options)
 {
 }
