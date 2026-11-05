@@ -1,6 +1,6 @@
 # OLAF — Decision Log
 
-Last updated: 2026-11-03
+Last updated: 2026-11-05
 
 This document is the authoritative record of why significant business and technical choices were made. Functional requirements and business rules are maintained in `PROJECT.md`; technical architecture guidance is maintained in `ARCHITECTURE.md`.
 
@@ -251,12 +251,12 @@ Use SQL Server Express as the initial database engine and Microsoft's EF Core SQ
 
 The preferred deployment model is a standalone .NET application hosted by Kestrel behind a reverse proxy such as Nginx. Containerization may be introduced later but is not a requirement for the initial deployment. The exact hosting provider and server environment remain open.
 
-### DEC-035 — Deployment-time initial Administrator provisioning
-- **Date:** 2026-11-03
+### DEC-035 — One-time initial Administrator provisioning
+- **Date:** 2026-11-05
 - **Status:** Accepted
 - **Related feature:** USR
 
-Provision the initial Administrator account as part of deployment/first database initialization, without a permanent public installer page or endpoint. Use the username `admin` and a securely generated initial password or a password supplied through a protected deployment secret. Require the Administrator to change the initial password at first sign-in. Never hard-code a known default password, expose the password through a public endpoint, or write it to logs. Bootstrap must be safe to retry and must not reset an existing Administrator's credentials on subsequent starts.
+Create the initial Administrator through a separate, explicitly invoked setup command after database migrations. Prompt for an email address, generate a temporary password and display it once, and require a password change at first sign-in. Do not modify an existing Administrator or automatically recreate one if all administrators are later deleted.
 
 ## 2. Deferred decisions
 
