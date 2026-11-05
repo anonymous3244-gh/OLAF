@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OLAF.Application.Authorization;
 using OLAF.Infrastructure.Persistence;
 using OLAF.Setup.Exceptions;
@@ -11,6 +12,8 @@ using System.Security.Cryptography;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
+
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning);
 
 var connectionString = builder
 	.Configuration
