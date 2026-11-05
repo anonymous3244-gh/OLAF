@@ -1,3 +1,5 @@
+using OLAF.Application.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,8 +24,30 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services
 	.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+	.AddRoles<IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddRazorPages();
+
+builder.Services.AddAuthorization(options =>
+{
+	options.FallbackPolicy = new AuthorizationPolicyBuilder()
+		.RequireAuthenticatedUser()
+		.Build();
+
+	options.AddPolicy(
+		AuthorizationPolicies.Administrator,
+		policy => policy.RequireRole(ApplicationRoles.Administrator));
+
+	options.AddPolicy(
+		AuthorizationPolicies.Manager,
+		policy => policy.RequireRole(
+			ApplicationRoles.Administrator,
+			ApplicationRoles.RentalManager));
+
+	options.AddPolicy(
+		AuthorizationPolicies.CleaningStaff,
+		policy => policy.RequireRole(ApplicationRoles.CleaningStaff));
+});
 
 var app = builder.Build();
 
@@ -45,7 +69,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+app.MapStaticAssets()
+	.AllowAnonymous();
 app.MapRazorPages()
 	.WithStaticAssets();
 
