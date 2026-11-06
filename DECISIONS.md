@@ -1,6 +1,6 @@
 # OLAF — Decision Log
 
-Last updated: 2026-11-05
+Last updated: 2026-11-06
 
 This document is the authoritative record of why significant business and technical choices were made. Functional requirements and business rules are maintained in `PROJECT.md`; technical architecture guidance is maintained in `ARCHITECTURE.md`.
 
@@ -257,6 +257,64 @@ The preferred deployment model is a standalone .NET application hosted by Kestre
 - **Related feature:** USR
 
 Create the initial Administrator through a separate, explicitly invoked setup command after database migrations. Prompt for an email address, generate a temporary password and display it once, and require a password change at first sign-in. Do not modify an existing Administrator or automatically recreate one if all administrators are later deleted.
+
+
+
+### DEC-036 — User account lifecycle and management
+- **Date:** 2026-11-06
+- **Status:** Accepted
+- **Related feature:** USR
+
+Accounts are deactivated, never deleted, and retained indefinitely to preserve historical references. Reactivation restores the previous role and settings. Administrators manage all accounts. Rental Managers manage Cleaning Staff accounts only, including basic account details, the automatic-approval setting and password resets; they cannot change staff-controlled preferences or settings. A manager-initiated password reset requires a password change at next sign-in, reusing the existing mandatory-password-change mechanism. Deactivation does not automatically reassign Cleaning tasks.
+
+### DEC-037 — Responsive calendar and selection behavior
+- **Date:** 2026-11-06
+- **Status:** Accepted
+- **Related features:** RES, FAC, USR
+
+Use a weekly combined timeline on desktop/tablet and a single-day calendar on mobile. Calendar navigation opens on today. Selected facilities are shown together; overlapping reservations across facilities appear side by side. Facility colors are dynamically assigned in selector order from a configurable global palette, whose size limits simultaneous selection. Selected facilities are remembered per user and browser/device in local storage. Cancelled reservations are hidden by default and the Show cancelled toggle resets on each fresh calendar opening. The global displayed-hours range defaults to 06:00–23:00 and does not restrict bookings.
+
+### DEC-038 — Reservation forms are modal
+- **Date:** 2026-11-06
+- **Status:** Accepted
+- **Related feature:** RES
+
+Reservation creation and editing use a centered modal on desktop and a full-screen modal on mobile. The background is dimmed and non-interactive; clicking outside the form does nothing. Escape or an explicit close/navigation action attempts to close it. Unsaved changes require confirmation; the confirmation itself is modal, and Escape keeps editing. Browser refresh, tab close and navigation away use the native unsaved-changes warning. Reservation details remain a read-only side panel on desktop and full-screen overlay on mobile.
+
+### DEC-039 — Reservation validation and calendar refresh
+- **Date:** 2026-11-06
+- **Status:** Accepted
+- **Related features:** RES, AVL
+
+Check availability after valid start and end values are entered, and recheck 500 ms after either changes. The facility is fixed before the form opens. Save is enabled only after required-field validation and confirmed availability; server-side validation remains authoritative. After successful save, cancellation or restoration, refresh the full visible calendar range while preserving the user's calendar context. Poll every 30 seconds while the calendar is active; pause while a reservation modal is open or the browser tab is hidden, and refresh immediately when resuming. Avoid overlapping requests.
+
+### DEC-040 — Request recovery for interactive forms
+- **Date:** 2026-11-06
+- **Status:** Accepted
+- **Related feature:** RES
+
+Share recovery conventions between a thin HTMX lifecycle integration and a helper for ordinary Fetch requests. On 401, preserve the form and allow login in another tab; on return to the original tab, retry the normal availability check first and attempt session recovery only if that check still returns 401. On 403, show an authorization error without retry. Use app-specific 419 for antiforgery-token failure, refresh the token and retry once; do not treat ordinary 400 responses as antiforgery failures. Prevent infinite retries and duplicate submissions.
+
+### DEC-041 — Cleaning review coordination and immutable submissions
+- **Date:** 2026-11-06
+- **Status:** Accepted
+- **Related features:** CLN, NTF, AUD
+
+Use Pending, ReadyForReview, InReview, CorrectionRequested and Approved cleaning states. The first manager to start review atomically claims it; an Administrator may exceptionally return it to ReadyForReview with a mandatory reason. Each submission creates an immutable Review with its own outcome, timestamp, photo snapshot and step comments. Correction submissions require new photos only for steps commented on in the latest correction review; approved steps do not reappear in staff work. Requesting corrections requires at least one actionable step comment. Staff capture photos using the device camera only; no selection from existing device storage. Automatic approval is an optional staff-account setting, default off, controlled by Administrators and Rental Managers, and affects future submissions only.
+
+### DEC-042 — Cleaning notifications and push delivery
+- **Date:** 2026-11-06
+- **Status:** Accepted
+- **Related features:** CLN, NTF
+
+Persistent in-app notifications are the source of truth; Web Push is immediate best-effort delivery on supported devices. Notify all managers when a task enters ReadyForReview unless automatically approved; withdraw the request when a manager claims the review. Notify the assigned staff member when a task is Approved or CorrectionRequested, including review comments. Notifications are high-priority, action-oriented, not grouped, and opening one marks it read. Initially register one push-enabled device per user; a new registration replaces the previous one. Push requires browser/device permission; iOS/iPadOS supported push requires adding OLAF to the Home Screen.
+
+### DEC-043 — Shared calendar settings and per-user preferences
+- **Date:** 2026-11-06
+- **Status:** Accepted
+- **Related features:** FAC, RES, USR
+
+Administrators and Rental Managers configure the global selected-facility color palette, reservation type colors and calendar display-hours range. Colors are validated hexadecimal HTML/CSS values with live previews; exact duplicates are prohibited after normalization, while visually similar colors are allowed. Palette changes apply on the next calendar load. First day of week is a per-user preference, default Monday with Sunday available. Selected facilities are stored locally per user and browser/device, not in the database or audit history.
 
 ## 2. Deferred decisions
 
