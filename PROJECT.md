@@ -17,9 +17,9 @@ Customers do not have access to OLAF in the initial release. Rental managers cre
 The initial release includes the features defined in sections 3–13.
 
 Initial user roles are:
-- **Administrator:** Has all application permissions, including user and permission management.
-- **Rental manager:** Has all application permissions except user and permission management.
-- **Cleaning staff:** Can access only cleaning reservations assigned to them and perform the permitted cleaning workflow actions on those reservations.
+- **Administrator:** Has all application permissions, including management of all user accounts and settings.
+- **Rental Manager:** Has all operational permissions and can manage Cleaning Staff accounts, but cannot manage Administrator or Rental Manager accounts.
+- **Cleaning Staff:** Can access assigned and unassigned Cleaning reservations, but not tasks assigned to other staff, and can perform only the permitted cleaning workflow actions.
 
 Customer self-service, multi-tenant support and other future possibilities are outside the initial release unless explicitly moved into scope through a new decision.
 
