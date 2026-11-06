@@ -87,7 +87,6 @@ This roadmap defines implementation order and completion outcomes. Functional re
 
 - Implement upcoming and overdue Cleaning overviews (CLN, NTF).
 - Implement views for Cleaning awaiting approval and requiring corrections (CLN, NTF).
-- Implement manager warnings when cleaning deadlines are reached without completion (NTF).
 - Implement the required notification delivery mechanism (NTF).
 
 **Completion criteria:** Managers can identify operational problems and receive required deadline warnings.
