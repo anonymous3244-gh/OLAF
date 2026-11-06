@@ -1,6 +1,6 @@
 # OLAF — Development Roadmap
 
-Last updated: 2026-11-05
+Last updated: 2026-11-06
 
 ## 1. Development status
 
@@ -126,6 +126,15 @@ This roadmap defines implementation order and completion outcomes. Functional re
 - Update milestone status as work progresses.
 - Keep `PROJECT.md`, `DECISIONS.md`, `ARCHITECTURE.md` and `ROADMAP.md` synchronized with significant changes.
 
-## 5. Current next step
+## 5. Current checkpoint
 
 Continue Phase 1 — Application foundation with M6: establish the responsive Razor Pages layout and integrate HTMX.
+
+M6 requirements and interaction decisions have been consolidated in `PROJECT.md` and `DECISIONS.md`. Planning coverage includes:
+- Responsive shared calendar, navigation, selection and refresh behavior.
+- Reservation creation/editing modals, details panels, forms, validation and request recovery.
+- Cleaning Staff calendar permissions, assignment, photo capture, review and correction workflow.
+- In-app notifications and Web Push behavior.
+- Shared calendar settings, user preferences and account management.
+
+M6 implementation is not yet complete. Continue with implementation in small milestones, validating each part against the requirements. Do not reopen accepted decisions unless implementation reveals a concrete conflict or limitation.
