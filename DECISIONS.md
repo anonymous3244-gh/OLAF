@@ -316,6 +316,13 @@ Persistent in-app notifications are the source of truth; Web Push is immediate b
 
 Administrators and Rental Managers configure the global selected-facility color palette, reservation type colors and calendar display-hours range. Colors are validated hexadecimal HTML/CSS values with live previews; exact duplicates are prohibited after normalization, while visually similar colors are allowed. Palette changes apply on the next calendar load. First day of week is a per-user preference, default Monday with Sunday available. Selected facilities are stored locally per user and browser/device, not in the database or audit history.
 
+### DEC-044 — Role-based application navigation
+- **Date:** 2026-11-06
+- **Status:** Accepted
+- **Related features:** USR, NTF
+
+Use a persistent, collapsible sidebar on desktop/tablet, expanded whenever OLAF is reopened. Expanded navigation shows icons and labels; collapsed navigation shows icons only. Tailor navigation to each role: Administrators receive the full application plus a collapsible Administration group containing User Management and Audit History; Rental Managers receive Calendar, Customers, Cleaning Staff, Notifications, Reports and Settings; Cleaning Staff receive Calendar and Notifications. Cleaning tasks are accessed through the Calendar and notifications, not a separate Cleaning item. All roles have Profile and Sign out at the bottom; Profile contains personal account details, password changes and individual preferences. Notifications show an unread-count badge that updates immediately when a notification is opened. On mobile, a hamburger button opens a navigation drawer over the current page, and selecting an item closes it.
+
 ## 2. Deferred decisions
 
 - **Hosting environment:** The deployment model is selected; the concrete hosting provider and server environment remain open.
