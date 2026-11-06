@@ -279,7 +279,7 @@ Use a weekly combined timeline on desktop/tablet and a single-day calendar on mo
 - **Status:** Accepted
 - **Related feature:** RES
 
-Reservation creation and editing use a centered modal on desktop and a full-screen modal on mobile. The background is dimmed and non-interactive; clicking outside the form does nothing. Escape or an explicit close/navigation action attempts to close it. Unsaved changes require confirmation; the confirmation itself is modal, and Escape keeps editing. Browser refresh, tab close and navigation away use the native unsaved-changes warning. Reservation details remain a read-only side panel on desktop and full-screen overlay on mobile.
+Reservation details, creation and editing all use the same modal presentation: a centered modal on desktop and a full-screen modal on mobile. The calendar remains in the background and is non-interactive while any reservation modal is open. Clicking outside does nothing. Escape or an explicit close/navigation action attempts to close a form; unsaved changes require confirmation. The confirmation itself is modal, and Escape keeps editing. Browser refresh, tab close and navigation away use the native unsaved-changes warning. Reservation details are read-only by default.
 
 ### DEC-039 — Reservation validation and calendar refresh
 - **Date:** 2026-11-06
