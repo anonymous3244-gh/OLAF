@@ -147,7 +147,7 @@ Cleaning requires an explicit completion action by assigned staff, including che
 
 ### DEC-020 — Mandatory manager approval
 - **Date:** 2026-11-01
-- **Status:** Accepted
+- **Status:** Superseded by DEC-041
 - **Related feature:** CLN
 
 Every completed Cleaning reservation requires manager approval. The workflow states are Pending, Completed, Correction requested and Approved.
@@ -161,7 +161,7 @@ When corrections are requested, the assigned staff member corrects the specified
 
 ### DEC-022 — No complex Cleaning escalation
 - **Date:** 2026-11-01
-- **Status:** Accepted
+- **Status:** Superseded by DEC-041 and DEC-042
 - **Related features:** CLN, NTF
 
 Provide visibility into upcoming, overdue, awaiting-approval and correction-required Cleaning reservations, and warn managers when a Cleaning deadline passes without completion. Do not add automatic approvals, artificial deadline extensions or complex escalation. People remain responsible for resolving operational exceptions directly.
