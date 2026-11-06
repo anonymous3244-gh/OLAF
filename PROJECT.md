@@ -410,9 +410,25 @@ The first day of the week is an individual Administrator/Rental Manager preferen
 
 Notification behavior is defined in section 10. Review history and submitted photos are immutable; staff-facing correction work is limited to steps requested in the latest correction review.
 
+### 14.8 Application navigation
+
+Desktop and tablet use a persistent, collapsible sidebar. It opens expanded whenever OLAF is reopened. When expanded, navigation items show icons and text labels; when collapsed, they show icons only. Navigation is tailored to the signed-in user's role.
+
+- **Administrator:** Full application navigation (Calendar, Customers, Cleaning Staff, Notifications, Reports and Settings), plus a separate collapsible Administration group at the bottom containing User Management and Audit History.
+- **Rental Manager:** Calendar, Customers, Cleaning Staff, Notifications, Reports and Settings.
+- **Cleaning Staff:** Calendar and Notifications. Cleaning tasks are accessed through the Calendar and relevant notifications; there is no separate Cleaning navigation item.
+
+All roles have Profile and Sign out in a separate area at the bottom of the sidebar. Profile provides access to personal account details, password changes and individual preferences. Application-wide configuration remains under Settings and is available according to role permissions.
+
+Notifications display an unread-count badge for all roles. Opening a notification marks it as read and updates the count immediately.
+
+On mobile, a hamburger button opens a navigation drawer over the current page. Selecting a navigation item closes the drawer automatically.
+
 ## 15. User account management (USR)
 
 Account lifecycle and role permissions are defined in section 9. Account management must preserve the identity of deactivated users in historical data. Deactivated accounts are retained indefinitely and cannot be permanently deleted.
+
+Every role has a Profile area for managing personal account details, changing the password and maintaining individual preferences. Application-wide configuration is managed separately through Settings, subject to role permissions.
 
 ## 16. Future possibilities
 
