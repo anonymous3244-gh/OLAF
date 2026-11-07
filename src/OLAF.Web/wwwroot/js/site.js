@@ -49,13 +49,21 @@
   const facilityPanel = document.getElementById('facilityPanel');
   const facilityBackdrop = document.getElementById('facilityPanelBackdrop');
   const facilityClose = document.getElementById('facilityPanelClose');
-  const facilityTagFilter = document.getElementById('facilityTagFilter');
+  const facilityTagInput = document.getElementById('facilityTagInput');
+  const facilityTagChips = document.getElementById('facilityTagChips');
+  const facilityTagSuggestions = document.getElementById('facilityTagSuggestions');
+  const facilityTagCombobox = document.getElementById('facilityTagCombobox');
   const facilityList = document.getElementById('facilityList');
   const facilityCheckboxes = [...(facilityList?.querySelectorAll('input[type="checkbox"]') || [])];
   const facilityLabel = document.getElementById('facilityFilterLabel');
   const facilityCount = document.getElementById('facilityFilterCount');
   const facilitySummary = document.getElementById('facilitySelectionSummary');
   const facilityStorageKey = 'olaf.calendar.selectedFacilities';
+  const availableTags = [...new Set(facilityCheckboxes.flatMap((checkbox) =>
+    checkbox.closest('.facility-option').dataset.tags.split(',').map((tag) => tag.trim())
+  ))].sort((a, b) => a.localeCompare(b));
+  const selectedTags = new Set();
+  let activeTagSuggestion = 0;
   let selectedFacilities = new Set(facilityCheckboxes.map((checkbox) => checkbox.value));
   try {
     const saved = JSON.parse(localStorage.getItem(facilityStorageKey) || 'null');
@@ -82,7 +90,7 @@
     facilityBackdrop.hidden = !open;
     facilityButton.setAttribute('aria-expanded', String(open));
     document.body.classList.toggle('facility-panel-open', open);
-    if (open) (facilityClose || facilityTagFilter)?.focus();
+    if (open) (facilityClose || facilityTagInput)?.focus();
     else facilityButton.focus();
   };
 
@@ -93,11 +101,106 @@
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && facilityPanel && !facilityPanel.hidden) setFacilityPanel(false);
   });
-  facilityTagFilter?.addEventListener('change', () => {
-    const tag = facilityTagFilter.value;
+  const applyTagFilter = () => {
     facilityList?.querySelectorAll('.facility-option').forEach((option) => {
-      option.hidden = tag !== 'all' && !option.dataset.tags.split(',').includes(tag);
+      const optionTags = option.dataset.tags.split(',').map((tag) => tag.trim());
+      option.hidden = [...selectedTags].some((tag) => !optionTags.includes(tag));
     });
+  };
+
+  const closeTagSuggestions = () => {
+    if (!facilityTagSuggestions || !facilityTagInput) return;
+    facilityTagSuggestions.hidden = true;
+    facilityTagInput.setAttribute('aria-expanded', 'false');
+  };
+
+  const renderTagSuggestions = () => {
+    if (!facilityTagInput || !facilityTagSuggestions) return;
+    const query = facilityTagInput.value.trim().toLocaleLowerCase();
+    const matches = query
+      ? availableTags.filter((tag) => !selectedTags.has(tag) && tag.toLocaleLowerCase().includes(query))
+      : [];
+    facilityTagSuggestions.replaceChildren();
+    activeTagSuggestion = 0;
+    matches.forEach((tag, index) => {
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.className = 'tag-suggestion' + (index === activeTagSuggestion ? ' active' : '');
+      option.setAttribute('role', 'option');
+      option.setAttribute('aria-selected', String(index === activeTagSuggestion));
+      option.textContent = tag;
+      option.addEventListener('mousedown', (event) => event.preventDefault());
+      option.addEventListener('click', () => addSelectedTag(tag));
+      facilityTagSuggestions.appendChild(option);
+    });
+    facilityTagSuggestions.hidden = matches.length === 0;
+    facilityTagInput.setAttribute('aria-expanded', String(matches.length > 0));
+  };
+
+  const renderSelectedTags = () => {
+    if (!facilityTagChips) return;
+    facilityTagChips.replaceChildren();
+    selectedTags.forEach((tag) => {
+      const chip = document.createElement('span');
+      chip.className = 'tag-chip';
+      const label = document.createElement('span');
+      label.textContent = tag;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'tag-chip-remove';
+      remove.setAttribute('aria-label', 'Remove ' + tag + ' tag');
+      remove.textContent = '×';
+      remove.addEventListener('click', () => {
+        selectedTags.delete(tag);
+        renderSelectedTags();
+        applyTagFilter();
+        renderTagSuggestions();
+      });
+      chip.append(label, remove);
+      facilityTagChips.appendChild(chip);
+    });
+  };
+
+  const addSelectedTag = (tag) => {
+    if (!availableTags.includes(tag) || selectedTags.has(tag)) return;
+    selectedTags.add(tag);
+    if (facilityTagInput) facilityTagInput.value = '';
+    renderSelectedTags();
+    applyTagFilter();
+    closeTagSuggestions();
+    facilityTagInput?.focus();
+  };
+
+  facilityTagInput?.addEventListener('input', renderTagSuggestions);
+  facilityTagInput?.addEventListener('keydown', (event) => {
+    const suggestions = [...(facilityTagSuggestions?.querySelectorAll('.tag-suggestion') || [])];
+    if (event.key === 'ArrowDown' && suggestions.length) {
+      event.preventDefault();
+      activeTagSuggestion = (activeTagSuggestion + 1) % suggestions.length;
+    } else if (event.key === 'ArrowUp' && suggestions.length) {
+      event.preventDefault();
+      activeTagSuggestion = (activeTagSuggestion - 1 + suggestions.length) % suggestions.length;
+    } else if ((event.key === 'Enter' || event.key === 'Tab') && suggestions.length) {
+      event.preventDefault();
+      addSelectedTag(suggestions[activeTagSuggestion].textContent);
+    } else if (event.key === 'Escape') {
+      closeTagSuggestions();
+    } else if (event.key === 'Backspace' && !facilityTagInput.value && selectedTags.size) {
+      const lastTag = [...selectedTags].at(-1);
+      selectedTags.delete(lastTag);
+      renderSelectedTags();
+      applyTagFilter();
+    }
+    suggestions.forEach((option, index) => {
+      option.classList.toggle('active', index === activeTagSuggestion);
+      option.setAttribute('aria-selected', String(index === activeTagSuggestion));
+    });
+  });
+  facilityTagInput?.addEventListener('blur', () => {
+    window.setTimeout(closeTagSuggestions, 120);
+  });
+  facilityTagCombobox?.addEventListener('focusout', (event) => {
+    if (!facilityTagCombobox.contains(event.relatedTarget)) closeTagSuggestions();
   });
   facilityCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', () => {
     selectedFacilities = new Set(facilityCheckboxes.filter((item) => item.checked).map((item) => item.value));
