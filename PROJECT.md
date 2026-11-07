@@ -424,7 +424,7 @@ On mobile, page content uses the available horizontal space. No fixed maximum co
 
 Notifications display an unread-count badge for all roles. Opening a notification marks it as read and updates the count immediately.
 
-On mobile, a hamburger button opens a navigation drawer over the current page. Selecting a navigation item closes the drawer automatically.
+On mobile, a hamburger button opens a full-screen-width navigation drawer over the current page. Tapping the hamburger button again closes it; tapping the dimmed area outside the drawer does nothing. When navigation changes the page through a full-page load, the drawer disappears naturally. For in-page navigation (such as SPA/HTMX navigation), close the drawer before switching the page content.
 
 ## 15. User account management (USR)
 
