@@ -238,7 +238,6 @@ Cleaning reservations use these states:
 - **InReview:** A manager has claimed the review.
 - **CorrectionRequested:** The manager requested corrections to specified steps.
 - **Approved:** The cleaning was approved; this is a final state.
-
 A staff submission moves Pending or CorrectionRequested to ReadyForReview, unless that staff member has automatic approval enabled, in which case it moves directly to Approved. Automatic approval is configurable on the staff account by Administrators and Rental Managers, defaults to disabled, and affects future submissions only. It does not change tasks already awaiting review.
 
 All managers are notified when a task enters ReadyForReview. The first manager to start reviewing it atomically claims it and changes it to InReview; other managers cannot review it concurrently. The claim records the manager and time. The review-request notification is withdrawn for all managers when the task is claimed.
@@ -418,7 +417,9 @@ Desktop and tablet use a persistent, collapsible sidebar. It opens expanded when
 - **Rental Manager:** Calendar, Customers, Cleaning Staff, Notifications, Reports and Settings.
 - **Cleaning Staff:** Calendar and Notifications. Cleaning tasks are accessed through the Calendar and relevant notifications; there is no separate Cleaning navigation item.
 
-All roles have Profile and Sign out in a separate area at the bottom of the sidebar. These actions are accessed through the sidebar only; do not add a duplicate user/avatar menu to the page header. The shared page header contains only the current page title and, on mobile, the navigation menu button. Do not display breadcrumbs. Profile provides access to personal account details, password changes and individual preferences. Application-wide configuration remains under Settings and is available according to role permissions.
+All roles have Profile and Sign out in a separate area at the bottom of the sidebar. These actions are accessed through the sidebar only; do not add a duplicate user/avatar menu to the page header. The shared page header shows the current page title centered on both desktop and mobile, with no breadcrumbs. On mobile, the hamburger menu button and notification bell occupy the right-side action area. The notification bell is also available on desktop, displays the unread-count badge, and navigates directly to the Notifications page; it does not open a dropdown or preview. The bell is not shown while a modal dialog is open. The header scrolls naturally with the page and is not sticky or fixed. Its decorative treatment, including any bottom separator, is left to visual design.
+
+On mobile, page content uses the available horizontal space. No fixed maximum content width is prescribed for desktop; layout width is left to visual design.
 
 Notifications display an unread-count badge for all roles. Opening a notification marks it as read and updates the count immediately.
 
