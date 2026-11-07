@@ -418,7 +418,7 @@ Desktop and tablet use a persistent, collapsible sidebar. It opens expanded when
 - **Rental Manager:** Calendar, Customers, Cleaning Staff, Notifications, Reports and Settings.
 - **Cleaning Staff:** Calendar and Notifications. Cleaning tasks are accessed through the Calendar and relevant notifications; there is no separate Cleaning navigation item.
 
-All roles have Profile and Sign out in a separate area at the bottom of the sidebar. Profile provides access to personal account details, password changes and individual preferences. Application-wide configuration remains under Settings and is available according to role permissions.
+All roles have Profile and Sign out in a separate area at the bottom of the sidebar. These actions are accessed through the sidebar only; do not add a duplicate user/avatar menu to the page header. The shared page header contains the page title and, on mobile, the navigation menu button. Profile provides access to personal account details, password changes and individual preferences. Application-wide configuration remains under Settings and is available according to role permissions.
 
 Notifications display an unread-count badge for all roles. Opening a notification marks it as read and updates the count immediately.
 
