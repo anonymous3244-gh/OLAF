@@ -3,51 +3,63 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>@ViewData["Title"] - OLAF.Web</title>
-	<script type="importmap"></script>
-	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<meta name="theme-color" content="#f6f7f9" />
+	<title>@ViewData["Title"] - OLAF</title>
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/OLAF.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
-	<header>
-		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-			<div class="container">
-				<a class="navbar-brand" asp-area="" asp-page="/Index">OLAF.Web</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-						aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-					<ul class="navbar-nav flex-grow-1">
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-						</li>
-					</ul>
-					<partial name="_LoginPartial" />
-				</div>
+	<div class="app-shell">
+		<aside class="sidebar" id="sidebar" aria-label="Main navigation">
+			<div class="brand-row">
+				<a class="brand" asp-area="" asp-page="/Index" aria-label="OLAF home">
+					<span class="brand-mark">O</span><span class="brand-name">OLAF</span>
+				</a>
+				<button class="drawer-close-button" id="drawerCloseButton" type="button" aria-label="Close navigation"><span></span><span></span></button>
 			</div>
-		</nav>
-	</header>
-	<div class="container">
-		<main role="main" class="pb-3">
-			@RenderBody()
-		</main>
-	</div>
+			<div class="sidebar-scroll">
+				<div class="nav-section-label">WORKSPACE</div>
+				<nav class="primary-nav">
+					<a class="nav-link active" asp-page="/Index"><span class="nav-icon">▦</span><span class="nav-label">Calendar</span></a>
+					<a class="nav-link" href="#"><span class="nav-icon">♙</span><span class="nav-label">Customers</span></a>
+					<a class="nav-link" href="#"><span class="nav-icon">♧</span><span class="nav-label">Cleaning staff</span></a>
+					<a class="nav-link" href="#"><span class="nav-icon">♧</span><span class="nav-label">Notifications</span><span class="nav-count">3</span></a>
+					<a class="nav-link" href="#"><span class="nav-icon">▤</span><span class="nav-label">Reports</span></a>
+					<a class="nav-link" href="#"><span class="nav-icon">⚙</span><span class="nav-label">Settings</span></a>
+				</nav>
+				<div class="nav-section-label administration-label">ADMINISTRATION</div>
+				<nav class="primary-nav">
+					<a class="nav-link" href="#"><span class="nav-icon">♙</span><span class="nav-label">User management</span></a>
+					<a class="nav-link" href="#"><span class="nav-icon">◷</span><span class="nav-label">Audit history</span></a>
+				</nav>
+			</div>
+			<div class="sidebar-bottom">
+				<a class="nav-link" href="#"><span class="nav-icon">◉</span><span class="nav-label">Profile</span></a>
+				<a class="nav-link" href="#"><span class="nav-icon">⇥</span><span class="nav-label">Sign out</span></a>
+				<button class="collapse-button" id="collapseSidebar" type="button" aria-label="Collapse sidebar"><span class="collapse-symbol">‹</span><span class="nav-label">Collapse sidebar</span></button>
+			</div>
+		</aside>
 
-	<footer class="border-top footer text-muted">
-		<div class="container">
-			&copy; 2026 - OLAF.Web - <a asp-area="" asp-page="/Privacy">Privacy</a>
+		<div class="mobile-scrim" id="mobileScrim" aria-hidden="true"></div>
+		<div class="app-main">
+			<header class="topbar">
+				<div class="topbar-side topbar-left"><span class="topbar-context">Workspace</span></div>
+				<h1 class="page-title">@ViewData["Title"]</h1>
+				<div class="topbar-actions">
+					<button class="icon-button notification-button" type="button" aria-label="Notifications">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="notification-dot"></span>
+					</button>
+					<button class="icon-button menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="sidebar">
+						<span></span><span></span><span></span>
+					</button>
+				</div>
+			</header>
+			<main class="page-content" role="main">
+				@RenderBody()
+			</main>
 		</div>
-	</footer>
-
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	</div>
 	<script src="~/js/site.js" asp-append-version="true"></script>
-
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

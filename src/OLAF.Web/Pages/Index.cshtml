@@ -1,10 +1,86 @@
 ﻿@page
 @model IndexModel
 @{
-	ViewData["Title"] = "Home page";
+	ViewData["Title"] = "Calendar";
 }
 
-<div class="text-center">
-	<h1 class="display-4">Welcome</h1>
-	<p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="calendar-page" aria-label="Calendar prototype">
+	<div class="calendar-sticky-controls">
+	<div class="calendar-toolbar">
+		<div class="calendar-controls">
+			<div class="date-navigation">
+				<button class="subtle-button today-button" type="button" id="todayButton">Today</button>
+				<button class="square-button" type="button" id="previousDay" aria-label="Previous period">‹</button>
+				<button class="square-button" type="button" id="nextDay" aria-label="Next period">›</button>
+				<strong class="date-range" id="dateRange">June 15 – 21, 2026</strong>
+			</div>
+			<button class="subtle-button date-picker-button" type="button" aria-label="Choose date">▦ <span>Choose date</span></button>
+			<button class="primary-button" type="button"><span>＋</span> New reservation</button>
+		</div>
+	</div>
+
+	<div class="calendar-meta">
+		<div class="facility-filter"><span class="filter-icon">☷</span><span>All facilities</span><span class="filter-count">4</span><span class="chevron">⌄</span></div>
+		<div class="calendar-legend">
+			<span><i class="legend-dot customer"></i>Customer</span>
+			<span><i class="legend-dot cleaning"></i>Cleaning</span>
+			<span><i class="legend-dot offline"></i>Offline</span>
+		</div>
+	</div>
+	</div>
+
+	<div class="calendar-frame">
+		<div class="calendar-grid desktop-calendar">
+			<div class="time-column">
+				<div class="day-heading time-heading">GMT+1</div>
+				<div class="time-labels"><span>00:00</span><span>01:00</span><span>02:00</span><span>03:00</span><span>04:00</span><span>05:00</span><span>06:00</span><span>07:00</span><span>08:00</span><span>09:00</span><span>10:00</span><span>11:00</span><span>12:00</span><span>13:00</span><span>14:00</span><span>15:00</span><span>16:00</span><span>17:00</span><span>18:00</span><span>19:00</span><span>20:00</span><span>21:00</span><span>22:00</span><span>23:00</span><span>24:00</span></div>
+			</div>
+			<div class="day-column">
+				<div class="day-heading"><span>MON</span><strong>15</strong></div>
+				<div class="day-track"><div class="reservation customer-block" data-time-range="08:00–11:00"><b>Alex Morgan</b><span>Unit 01 · 08:00–11:00</span></div><div class="reservation cleaning-block" data-time-range="11:30–13:00"><b>Cleaning</b><span>Unit 01 · 11:30–13:00</span></div><div class="reservation offline-block" data-time-range="16:00–18:30"><b>Maintenance</b><span>Unit 03 · 16:00–18:30</span></div></div>
+			</div>
+			<div class="day-column">
+				<div class="day-heading"><span>TUE</span><strong>16</strong></div>
+				<div class="day-track"><div class="reservation customer-block" data-time-range="07:00–10:30"><b>Jamie Wilson</b><span>Unit 02 · 07:00–10:30</span></div><div class="reservation customer-block" data-time-range="13:00–16:00"><b>Taylor Reed</b><span>Unit 04 · 13:00–16:00</span></div><div class="reservation cleaning-block" data-time-range="16:30–18:00"><b>Cleaning</b><span>Unit 04 · 16:30–18:00</span></div></div>
+			</div>
+			<div class="day-column">
+				<div class="day-heading"><span>WED</span><strong>17</strong></div>
+				<div class="day-track"><div class="reservation offline-block" data-time-range="09:00–12:30"><b>Renovation</b><span>Unit 02 · 09:00–12:30</span></div><div class="reservation customer-block" data-time-range="14:00–17:00"><b>Jordan Lee</b><span>Unit 01 · 14:00–17:00</span></div></div>
+			</div>
+			<div class="day-column">
+				<div class="day-heading"><span>THU</span><strong>18</strong></div>
+				<div class="day-track"><div class="reservation customer-block" data-time-range="07:30–10:30"><b>Sam Parker</b><span>Unit 03 · 07:30–10:30</span></div><div class="reservation cleaning-block" data-time-range="11:00–12:45"><b>Cleaning</b><span>Unit 03 · 11:00–12:45</span></div><div class="reservation customer-block" data-time-range="15:30–19:00"><b>Casey Smith</b><span>Unit 02 · 15:30–19:00</span></div></div>
+			</div>
+			<div class="day-column">
+				<div class="day-heading"><span>FRI</span><strong>19</strong></div>
+				<div class="day-track"><div class="reservation customer-block" data-time-range="10:00–13:15"><b>Alex Morgan</b><span>Unit 04 · 10:00–13:15</span></div><div class="reservation cleaning-block" data-time-range="13:30–15:00"><b>Cleaning</b><span>Unit 04 · 13:30–15:00</span></div></div>
+			</div>
+			<div class="day-column weekend-column">
+				<div class="day-heading"><span>SAT</span><strong>20</strong></div>
+				<div class="day-track"><div class="reservation customer-block" data-time-range="08:00–11:30"><b>Jamie Wilson</b><span>Unit 01 · 08:00–11:30</span></div></div>
+			</div>
+			<div class="day-column weekend-column">
+				<div class="day-heading"><span>SUN</span><strong>21</strong></div>
+				<div class="day-track"></div>
+			</div>
+		</div>
+
+		<div class="mobile-calendar">
+			<div class="mobile-day-heading"><div><span id="mobileDayName">TODAY</span><strong id="mobileDate">7 NOVEMBER 2026</strong></div><span class="day-status" id="mobileReservationCount">7 reservations</span></div>
+			<div class="mobile-day-body">
+				<div class="mobile-time-rail"><span>00:00</span><span>02:00</span><span>04:00</span><span>06:00</span><span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span><span>16:00</span><span>18:00</span><span>20:00</span><span>22:00</span><span>24:00</span></div>
+				<div class="mobile-day-track" id="mobileDayTrack">
+					<div class="mobile-reservation cleaning-block" data-start="6.5" data-end="8"><b>Cleaning</b><span>Unit 03 · 06:30–08:00</span></div>
+					<div class="mobile-reservation customer-block" data-start="8" data-end="11"><b>Alex Morgan</b><span>Unit 01 · 08:00–11:00</span></div>
+					<div class="mobile-reservation customer-block" data-start="9" data-end="12.5"><b>Jamie Wilson</b><span>Unit 02 · 09:00–12:30</span></div>
+					<div class="mobile-reservation cleaning-block" data-start="11.5" data-end="13"><b>Cleaning</b><span>Unit 01 · 11:30–13:00</span></div>
+					<div class="mobile-reservation customer-block" data-start="13" data-end="16"><b>Taylor Reed</b><span>Unit 04 · 13:00–16:00</span></div>
+					<div class="mobile-reservation offline-block" data-start="15.5" data-end="18"><b>Maintenance</b><span>Unit 03 · 15:30–18:00</span></div>
+					<div class="mobile-reservation customer-block" data-start="20" data-end="22"><b>Jordan Lee</b><span>Unit 02 · 20:00–22:00</span></div>
+					<div class="current-time-indicator" id="currentTimeIndicator" hidden><span id="currentTimeLabel"></span></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="prototype-note"><span class="note-mark">i</span> Preview layout · Sample reservations are illustrative only</div>
+</section>
