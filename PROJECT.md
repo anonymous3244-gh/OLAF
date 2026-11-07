@@ -238,6 +238,7 @@ Cleaning reservations use these states:
 - **InReview:** A manager has claimed the review.
 - **CorrectionRequested:** The manager requested corrections to specified steps.
 - **Approved:** The cleaning was approved; this is a final state.
+
 A staff submission moves Pending or CorrectionRequested to ReadyForReview, unless that staff member has automatic approval enabled, in which case it moves directly to Approved. Automatic approval is configurable on the staff account by Administrators and Rental Managers, defaults to disabled, and affects future submissions only. It does not change tasks already awaiting review.
 
 All managers are notified when a task enters ReadyForReview. The first manager to start reviewing it atomically claims it and changes it to InReview; other managers cannot review it concurrently. The claim records the manager and time. The review-request notification is withdrawn for all managers when the task is claimed.
