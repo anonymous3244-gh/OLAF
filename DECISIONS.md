@@ -375,3 +375,11 @@ New decisions receive the next available DEC ID. Feature IDs are defined in `PRO
 - **Related feature:** USR
 
 Keep Profile and Sign out exclusively in the bottom area of the sidebar/navigation drawer. Do not duplicate these actions in a user/avatar menu in the page header. The shared page header contains the page title and, on mobile, the navigation menu button.
+
+
+### DEC-046 — Page header uses no breadcrumbs
+- **Date:** 2026-11-07
+- **Status:** Accepted
+- **Related feature:** USR
+
+Keep the shared page header simple: show the current page title, plus the mobile navigation menu button where applicable. Do not display breadcrumbs.
