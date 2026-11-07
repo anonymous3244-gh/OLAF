@@ -367,3 +367,11 @@ When an accepted decision changes:
 - Reference the superseded decision where appropriate.
 
 New decisions receive the next available DEC ID. Feature IDs are defined in `PROJECT.md` and reused here without creating a separate registry.
+
+
+### DEC-045 — Shared page header and account actions
+- **Date:** 2026-11-07
+- **Status:** Accepted
+- **Related feature:** USR
+
+Keep Profile and Sign out exclusively in the bottom area of the sidebar/navigation drawer. Do not duplicate these actions in a user/avatar menu in the page header. The shared page header contains the page title and, on mobile, the navigation menu button.
