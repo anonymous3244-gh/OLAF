@@ -217,8 +217,7 @@ Store timestamps in UTC, display times in the browser's local time zone and perf
 
 Repeated submissions of the same logical operation must not create duplicate reservations or associated Cleaning reservations. The implementation remains to be investigated.
 
-### DEC-030 — Optimistic concurrency for editing
-- **Date:** 2026-11-01
+### DEC-030 — Optimistic concurrency for editing- **Date:** 2026-11-01
 - **Status:** Accepted
 - **Related features:** RES, AVL
 
@@ -383,3 +382,10 @@ Keep Profile and Sign out exclusively in the bottom area of the sidebar/navigati
 - **Related feature:** USR
 
 Keep the shared page header simple: show the current page title, plus the mobile navigation menu button where applicable. Do not display breadcrumbs.
+
+### DEC-047 — Shared header behavior and responsive content width
+- **Date:** 2026-11-07
+- **Status:** Accepted
+- **Related features:** USR, NTF
+
+Center the current page title in the shared header on desktop and mobile; do not show breadcrumbs. Keep the notification bell in the header's right-side action area, alongside the mobile hamburger button where applicable. The bell displays the unread count and navigates directly to the Notifications page without a dropdown or preview; hide it while a modal dialog is open. The header scrolls naturally with the page rather than remaining sticky or fixed. Leave decorative details such as a bottom separator to visual design. On mobile, page content uses the available horizontal space; no fixed maximum content width is prescribed for desktop.
