@@ -44,6 +44,74 @@
   const currentTimeLabel = document.getElementById('currentTimeLabel');
   const mobileReservationCount = document.getElementById('mobileReservationCount');
   const formatDate = (date, options) => new Intl.DateTimeFormat('en', options).format(date);
+
+  const facilityButton = document.getElementById('facilityFilterButton');
+  const facilityPanel = document.getElementById('facilityPanel');
+  const facilityBackdrop = document.getElementById('facilityPanelBackdrop');
+  const facilityClose = document.getElementById('facilityPanelClose');
+  const facilityTagFilter = document.getElementById('facilityTagFilter');
+  const facilityList = document.getElementById('facilityList');
+  const facilityCheckboxes = [...(facilityList?.querySelectorAll('input[type="checkbox"]') || [])];
+  const facilityLabel = document.getElementById('facilityFilterLabel');
+  const facilityCount = document.getElementById('facilityFilterCount');
+  const facilitySummary = document.getElementById('facilitySelectionSummary');
+  const facilityStorageKey = 'olaf.calendar.selectedFacilities';
+  let selectedFacilities = new Set(facilityCheckboxes.map((checkbox) => checkbox.value));
+  try {
+    const saved = JSON.parse(localStorage.getItem(facilityStorageKey) || 'null');
+    if (Array.isArray(saved)) selectedFacilities = new Set(saved.filter((id) => facilityCheckboxes.some((checkbox) => checkbox.value === id)));
+  } catch { /* Use the default selection when local storage is unavailable. */ }
+
+  const applyFacilitySelection = () => {
+    facilityCheckboxes.forEach((checkbox) => { checkbox.checked = selectedFacilities.has(checkbox.value); });
+    document.querySelectorAll('[data-facility]').forEach((reservation) => {
+      reservation.hidden = !selectedFacilities.has(reservation.dataset.facility);
+    });
+    const count = selectedFacilities.size;
+    if (facilityCount) facilityCount.textContent = String(count);
+    if (facilityLabel) facilityLabel.textContent = count === facilityCheckboxes.length ? 'All facilities' : count === 0 ? 'No facilities' : window.innerWidth <= 700 ? 'Selected facilities' : count + ' facilities';
+    if (facilitySummary) facilitySummary.textContent = count + ' of ' + facilityCheckboxes.length + ' selected';
+    const visibleMobileReservations = mobileTrack?.querySelectorAll('.mobile-reservation:not([hidden])').length || 0;
+    if (mobileReservationCount) mobileReservationCount.textContent = visibleMobileReservations + ' reservations';
+    try { localStorage.setItem(facilityStorageKey, JSON.stringify([...selectedFacilities])); } catch { /* Selection still works for this page view. */ }
+  };
+
+  const setFacilityPanel = (open) => {
+    if (!facilityPanel || !facilityButton || !facilityBackdrop) return;
+    facilityPanel.hidden = !open;
+    facilityBackdrop.hidden = !open;
+    facilityButton.setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('facility-panel-open', open);
+    if (open) (facilityClose || facilityTagFilter)?.focus();
+    else facilityButton.focus();
+  };
+
+  facilityButton?.addEventListener('click', () => setFacilityPanel(facilityPanel.hidden));
+  facilityClose?.addEventListener('click', () => setFacilityPanel(false));
+  document.getElementById('facilityPanelDone')?.addEventListener('click', () => setFacilityPanel(false));
+  facilityBackdrop?.addEventListener('click', () => setFacilityPanel(false));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && facilityPanel && !facilityPanel.hidden) setFacilityPanel(false);
+  });
+  facilityTagFilter?.addEventListener('change', () => {
+    const tag = facilityTagFilter.value;
+    facilityList?.querySelectorAll('.facility-option').forEach((option) => {
+      option.hidden = tag !== 'all' && !option.dataset.tags.split(',').includes(tag);
+    });
+  });
+  facilityCheckboxes.forEach((checkbox) => checkbox.addEventListener('change', () => {
+    selectedFacilities = new Set(facilityCheckboxes.filter((item) => item.checked).map((item) => item.value));
+    applyFacilitySelection();
+  }));
+  document.getElementById('selectAllFacilities')?.addEventListener('click', () => {
+    facilityList?.querySelectorAll('.facility-option:not([hidden]) input').forEach((checkbox) => selectedFacilities.add(checkbox.value));
+    applyFacilitySelection();
+  });
+  document.getElementById('deselectAllFacilities')?.addEventListener('click', () => {
+    facilityList?.querySelectorAll('.facility-option:not([hidden]) input').forEach((checkbox) => selectedFacilities.delete(checkbox.value));
+    applyFacilitySelection();
+  });
+  applyFacilitySelection();
   const selectedDate = new Date();
   selectedDate.setHours(0, 0, 0, 0);
 
