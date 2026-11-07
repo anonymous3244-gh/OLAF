@@ -38,14 +38,12 @@
 			<button class="facility-panel-close" id="facilityPanelClose" type="button" aria-label="Close facility selector">×</button>
 		</div>
 		<div class="facility-tag-filter">
-			<label for="facilityTagFilter">Filter by tag</label>
-			<select id="facilityTagFilter">
-				<option value="all">All tags</option>
-				<option value="Waterfront">Waterfront</option>
-				<option value="Garden">Garden</option>
-				<option value="Large">Large</option>
-				<option value="Family">Family</option>
-			</select>
+			<label for="facilityTagInput">Filter by tags</label>
+			<div class="tag-combobox" id="facilityTagCombobox">
+				<div class="tag-chip-list" id="facilityTagChips"></div>
+				<input id="facilityTagInput" type="text" placeholder="Start typing a tag…" autocomplete="off" aria-autocomplete="list" aria-controls="facilityTagSuggestions" aria-expanded="false">
+				<div class="tag-suggestions" id="facilityTagSuggestions" role="listbox" hidden></div>
+			</div>
 		</div>
 		<div class="facility-selection-actions">
 			<button type="button" id="selectAllFacilities">Select all</button>
