@@ -217,7 +217,8 @@ Store timestamps in UTC, display times in the browser's local time zone and perf
 
 Repeated submissions of the same logical operation must not create duplicate reservations or associated Cleaning reservations. The implementation remains to be investigated.
 
-### DEC-030 — Optimistic concurrency for editing- **Date:** 2026-11-01
+### DEC-030 — Optimistic concurrency for editing
+- **Date:** 2026-11-01
 - **Status:** Accepted
 - **Related features:** RES, AVL
 
