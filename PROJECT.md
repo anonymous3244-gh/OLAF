@@ -1,6 +1,6 @@
 # OLAF — Project Requirements
 
-Last updated: 2026-11-06
+Last updated: 2026-11-22
 
 This document is the authoritative source for OLAF's functional requirements and business rules.
 
@@ -42,11 +42,16 @@ Customer management is part of the initial release.
 
 Managers must be able to:
 - Create and edit customer records.
+- Assign and maintain a customer display caption used to recognize the customer operationally.
 - Search and browse existing customers.
 - View customer reservation history.
 - Maintain internal comments and relevant customer information.
 
-Potential customer information includes name, contact information, reservation history, internal comments and relevant operational information such as a risk assessment.
+The display caption is entered and controlled by the manager. It may be the customer's name or a mnemonic label that helps the manager recognize them later (for example, "John Smith new" or "John Smith funny"). OLAF must persist the caption as entered; it must not generate suffixes or otherwise rename customers automatically. The caption is an operational identifier, not a guarantee of the customer's legal identity.
+
+Phone number and email address are optional contact information. Customer names and captions are not required to be unique. Customer search supports multi-word queries using AND matching: every query word must match at least one of the caption, phone number or email address, and different words may match different fields.
+
+Other customer information may include reservation history, internal comments and relevant operational information such as a risk assessment.
 
 During reservation creation, the interface must provide:
 - A searchable dropdown for selecting an existing customer.
@@ -371,9 +376,9 @@ Reservation details remain read-only by default and use the same modal presentat
 
 ### 14.3 Reservation forms and availability feedback
 
-Customer forms contain Customer details (name and phone), Quick fill, Start/End date and time, Total price and Notes. Name and phone are side by side on desktop and stacked on mobile; Start/End follow the same responsive pattern. Quick fill is a full-width row above Start/End. Selecting an optional facility-specific template immediately overwrites only the fields relevant to that form; there is no Apply step or persistent template relationship. Values remain editable. Customer details and Notes are not changed by template selection. Total price is entered manually, without automatic calculation.
+Customer forms contain Customer details (display caption, optional phone and optional email), Quick fill, Start/End date and time, Total price and Notes. The display caption is required; phone and email are optional. Customer details and Start/End use the same responsive side-by-side desktop and stacked mobile layout. Quick fill is a full-width row above Start/End. Selecting an optional facility-specific template immediately overwrites only the fields relevant to that form; there is no Apply step or persistent template relationship. Values remain editable. Customer details and Notes are not changed by template selection. Total price is entered manually, without automatic calculation.
 
-Customer records are identified through one primary customer name and phone number. Phone numbers are normalized for uniqueness. Selecting a known phone prefills the existing customer's name, which is read-only in the reservation form. A manager can change the customer on an existing reservation by selecting another or creating a new customer. Existing customer phone numbers are immutable; changing a phone requires a new customer record and does not merge records or alter historical reservations. Customer internal IDs are not displayed. Customer search supports partial name/phone matching. Customer history shows the latest ten reservations, all types including cancelled, newest first.
+The manager-assigned customer display caption is the operational identifier shown in customer selection and reservation details. It is stored exactly as entered; OLAF does not generate duplicate-name suffixes. Customer internal IDs are not displayed. Customer search supports multi-word AND matching across display caption, phone and email; each query word may match any of those fields. Customer history shows the latest ten reservations, all types including cancelled, newest first.
 
 Cleaning forms use the common reservation fields plus an optional assigned Cleaning Staff member. Offline forms use the common reservation fields, a mandatory free-text reason and optional Notes. Templates are optional on all three forms; selecting one changes only fields applicable to that form. Start and End are populated for all types; Total price is populated only for Customer. Customer details, assignee, Offline reason and Notes are not overwritten by template selection.
 
