@@ -1,0 +1,48 @@
+@page
+@model OLAF.Web.Pages.CustomersModel
+@{
+	ViewData["Title"] = "Customers";
+}
+<section class="customers-page">
+	<div class="customers-toolbar">
+		<div><h2>Customer directory</h2><p>Manage customer details and keep operational notes.</p></div>
+		<button class="primary-button" id="createCustomerButton" type="button">＋ New customer</button>
+	</div>
+	<div class="customers-search-row">
+		<label class="customers-search-label" for="customersSearch">Search customers</label>
+		<input id="customersSearch" type="search" placeholder="Caption, phone, email…" autocomplete="off">
+		<label class="customers-inactive-toggle"><input id="includeInactive" type="checkbox"> Include inactive</label>
+	</div>
+	<div id="customersStatus" class="customers-status" role="status" aria-live="polite"></div>
+	<div id="customersList" class="customers-list">
+		@foreach (var customer in Model.Customers)
+		{
+			<article class="customer-card">
+				<div class="customer-card-main">
+					<div class="customer-card-heading"><h3>@customer.DisplayCaption</h3><span class="customer-state @(customer.IsActive ? "active" : "inactive")">@(customer.IsActive ? "Active" : "Inactive")</span></div>
+					<p class="customer-contact">@customer.Phone @customer.Email</p>
+					@if (!string.IsNullOrWhiteSpace(customer.Notes)) { <p class="customer-notes">@customer.Notes</p> }
+				</div>
+				<div class="customer-card-actions">
+					<button type="button" class="secondary-button edit-customer" data-id="@customer.Id">Edit</button>
+					<button type="button" class="secondary-button toggle-customer" data-id="@customer.Id">@(customer.IsActive ? "Deactivate" : "Activate")</button>
+				</div>
+			</article>
+		}
+	</div>
+</section>
+<dialog class="customer-dialog" id="customerManagementDialog" aria-labelledby="customerManagementTitle">
+	<form id="customerManagementForm">
+		<div class="reservation-dialog-header"><div><p class="dialog-eyebrow">CUSTOMER</p><h2 id="customerManagementTitle">New customer</h2></div><button class="facility-panel-close" id="customerManagementClose" type="button" aria-label="Close dialog">×</button></div>
+		<div class="reservation-form-grid">
+			<label class="form-wide">Display caption<input id="managedCustomerCaption" required autocomplete="off"></label>
+			<label class="form-wide">Phone <span class="optional-label">Optional</span><input id="managedCustomerPhone" type="text"></label>
+			<label class="form-wide">Email <span class="optional-label">Optional</span><input id="managedCustomerEmail" type="text"></label>
+			<label class="form-wide">Notes <span class="optional-label">Optional</span><textarea id="managedCustomerNotes" rows="4"></textarea></label>
+		</div>
+		<div class="reservation-dialog-footer"><button class="subtle-button" id="customerManagementCancel" type="button">Cancel</button><button class="primary-button" type="submit">Save customer</button></div>
+	</form>
+</dialog>
+@section Scripts {
+	<script src="~/js/customers.js" asp-append-version="true"></script>
+}
