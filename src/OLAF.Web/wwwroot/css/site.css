@@ -217,3 +217,29 @@ a { color: inherit; text-decoration: none; }
   .tag-suggestions { top: auto; bottom: calc(100% + 5px); max-height: min(180px, 30dvh); }
   .facility-panel-footer { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
 }
+
+
+/* Reservation dialog and interactive calendar prototype */
+.reservation { cursor: pointer; }
+.reservation:hover, .mobile-reservation:hover { filter: brightness(.97); outline: 1px solid #8da0ee; outline-offset: 1px; }
+.reservation-dialog { width: min(560px, calc(100vw - 32px)); max-width: none; max-height: min(90dvh, 760px); padding: 0; overflow: auto; border: 1px solid #e4e8ef; border-radius: 14px; background: white; color: var(--ink); box-shadow: 0 24px 80px #17223538; }
+.reservation-dialog::backdrop { background: #17223580; backdrop-filter: blur(2px); }
+.reservation-dialog form { padding: 25px; }
+.reservation-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding-bottom: 22px; border-bottom: 1px solid #edf0f4; }
+.reservation-dialog-header h2 { margin: 4px 0 0; color: #293548; font: 700 21px Manrope, sans-serif; }
+.dialog-eyebrow { margin: 0; color: #8a96a8; font-size: 10px; font-weight: 700; letter-spacing: .12em; }
+.reservation-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 22px 0; }
+.reservation-form-grid label { display: grid; gap: 7px; color: #59677b; font-size: 11px; font-weight: 700; }
+.reservation-form-grid input, .reservation-form-grid select { width: 100%; min-width: 0; height: 42px; padding: 0 11px; border: 1px solid #dfe5ed; border-radius: 8px; outline: none; background: white; color: #344157; font: inherit; font-size: 13px; }
+.reservation-form-grid input:focus, .reservation-form-grid select:focus { border-color: #9aa9f2; box-shadow: 0 0 0 3px #526fe514; }
+.form-wide { grid-column: 1 / -1; }
+.reservation-type-hint { padding: 11px 12px; border-radius: 7px; background: #f5f7fb; color: #788598; font-size: 11px; line-height: 1.5; }
+.reservation-dialog-footer { display: flex; justify-content: flex-end; gap: 9px; padding-top: 17px; border-top: 1px solid #edf0f4; }
+.reservation-dialog-footer .primary-button { min-width: 140px; }
+@media (max-width: 700px) {
+  .reservation-dialog { width: 100%; height: 100dvh; max-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+  .reservation-dialog form { display: flex; flex-direction: column; min-height: 100%; padding: max(22px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); }
+  .reservation-form-grid { grid-template-columns: 1fr; gap: 14px; }
+  .form-wide { grid-column: auto; }
+  .reservation-dialog-footer { margin-top: auto; }
+}
