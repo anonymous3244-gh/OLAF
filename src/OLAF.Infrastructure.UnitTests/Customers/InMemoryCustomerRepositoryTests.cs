@@ -36,6 +36,20 @@ public sealed class InMemoryCustomerRepositoryTests
 	}
 
 	[Fact]
+	public async Task UpdateAsync_WithIdenticalValues_DoesNotChangeAuditMetadata()
+	{
+		var repository = new InMemoryCustomerRepository();
+		var createdAt = DateTimeOffset.UtcNow;
+		var created = await repository.AddAsync(new NewCustomerRecord("Customer", null, null, null, "manager", createdAt));
+
+		var unchanged = await repository.UpdateAsync(created.Id, new CustomerUpdateRecord("Customer", null, null, null, "another-manager", createdAt.AddMinutes(1)));
+
+		Assert.Same(created, unchanged);
+		Assert.Equal("manager", unchanged!.UpdatedBy);
+		Assert.Equal(createdAt, unchanged.UpdatedAt);
+	}
+
+	[Fact]
 	public async Task SetActiveAsync_ExcludesInactiveByDefaultAndCanIncludeThem()
 	{
 		var repository = new InMemoryCustomerRepository();
