@@ -327,6 +327,37 @@
   const reservationUnits = facilityCheckboxes.map((checkbox) => ({ id: checkbox.value, label: checkbox.closest('.facility-option').querySelector('strong').textContent }));
   let editingReservation = null;
 
+  // Make the illustrative reservations editable too, using their displayed calendar dates.
+  document.querySelectorAll('.desktop-calendar .reservation').forEach((element) => {
+    const column = element.closest('.day-column');
+    const index = [...(column?.parentElement?.querySelectorAll('.day-column') || [])].indexOf(column);
+    const date = getMonday(selectedDate);
+    date.setDate(date.getDate() + index);
+    const match = (element.dataset.timeRange || '').match(/(\\d{2}:\\d{2})–(\\d{2}:\\d{2})/);
+    if (match) {
+      element.dataset.date = dateKey(date);
+      element.dataset.startTime = match[1];
+      element.dataset.endTime = match[2];
+    }
+    element.dataset.type = element.classList.contains('cleaning-block') ? 'cleaning' : element.classList.contains('offline-block') ? 'offline' : 'customer';
+    element.addEventListener('click', (event) => {
+      event.stopPropagation();
+      openReservationDialog({ reservation: element });
+    });
+  });
+  document.querySelectorAll('.mobile-calendar .mobile-reservation').forEach((element) => {
+    const start = Number(element.dataset.start);
+    const end = Number(element.dataset.end);
+    element.dataset.date = dateKey(selectedDate);
+    element.dataset.startTime = toTime(Math.floor(start), Math.round((start % 1) * 60));
+    element.dataset.endTime = toTime(Math.floor(end), Math.round((end % 1) * 60));
+    element.dataset.type = element.classList.contains('cleaning-block') ? 'cleaning' : element.classList.contains('offline-block') ? 'offline' : 'customer';
+    element.addEventListener('click', (event) => {
+      event.stopPropagation();
+      openReservationDialog({ reservation: element });
+    });
+  });
+
   const dateKey = (date) => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
   const toTime = (hour, minute) => String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
   const selectedUnitIds = () => [...selectedFacilities];
