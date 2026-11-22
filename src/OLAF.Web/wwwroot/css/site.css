@@ -243,3 +243,28 @@ a { color: inherit; text-decoration: none; }
   .form-wide { grid-column: auto; }
   .reservation-dialog-footer { margin-top: auto; }
 }
+
+.customer-picker-field { position: relative; }
+.customer-picker-row { display: flex; gap: 8px; }
+.customer-picker-row input { flex: 1; }
+.secondary-icon-button { flex: 0 0 42px; width: 42px; height: 42px; border: 1px solid #dfe5ed; border-radius: 8px; background: #f7f8fc; color: #526fe5; font-size: 22px; }
+.secondary-icon-button:hover { background: #eef1ff; }
+.customer-search-results { position: absolute; z-index: 4; top: calc(100% - 18px); right: 0; left: 0; max-height: 220px; overflow-y: auto; padding: 5px; border: 1px solid #e1e6ed; border-radius: 9px; background: white; box-shadow: 0 10px 28px #17223520; }
+.customer-search-results[hidden], .customer-picker-field[hidden], .reservation-title-field[hidden] { display: none !important; }
+.customer-search-option { display: grid; width: 100%; gap: 4px; padding: 10px; border: 0; border-radius: 6px; background: white; text-align: left; }
+.customer-search-option:hover { background: #f2f4ff; }
+.customer-search-option strong { color: #344157; font-size: 12px; }
+.customer-search-option span, .customer-search-empty, .customer-selection-hint { color: #8792a2; font-size: 10px; }
+.customer-search-empty { margin: 0; padding: 11px; }
+.customer-selection-hint { margin: 6px 0 0; line-height: 1.4; }
+.optional-label { color: #9aa4b2; font-size: 10px; font-weight: 500; }
+.customer-dialog { width: min(440px, calc(100vw - 32px)); max-width: none; max-height: min(90dvh, 700px); padding: 0; overflow: auto; border: 1px solid #e4e8ef; border-radius: 14px; background: white; color: var(--ink); box-shadow: 0 24px 80px #17223538; }
+.customer-dialog::backdrop { background: #17223580; backdrop-filter: blur(2px); }
+.customer-dialog form { padding: 25px; }
+.customer-dialog .reservation-form-grid { grid-template-columns: 1fr; }
+.customer-dialog .form-wide { grid-column: auto; }
+@media (max-width: 700px) {
+  .customer-dialog { width: 100%; height: 100dvh; max-height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+  .customer-dialog form { display: flex; flex-direction: column; min-height: 100%; padding: max(22px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); }
+  .customer-dialog .reservation-dialog-footer { margin-top: auto; }
+}
