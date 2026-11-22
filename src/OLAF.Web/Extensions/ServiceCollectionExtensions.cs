@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OLAF.Application.Authorization;
 using OLAF.Infrastructure.Persistence;
+using OLAF.Infrastructure.Customers;
 using OLAF.Web.Identity;
 using System;
 using System.Threading.Tasks;
@@ -22,6 +23,8 @@ public static class ServiceCollectionExtensions
 		services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
 		services.AddDatabaseDeveloperPageExceptionFilter();
+
+		services.AddInMemoryCustomerRepository();
 
 		services
 			.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
