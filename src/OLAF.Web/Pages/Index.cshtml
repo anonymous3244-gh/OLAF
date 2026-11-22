@@ -143,9 +143,10 @@
 		<form id="customerForm">
 			<div class="reservation-dialog-header"><div><p class="dialog-eyebrow">CUSTOMER</p><h2 id="customerDialogTitle">New customer</h2></div><button class="facility-panel-close" id="customerDialogClose" type="button" aria-label="Close customer dialog">×</button></div>
 			<div class="reservation-form-grid">
-				<label class="form-wide">Name<input id="customerName" name="name" type="text" maxlength="120" required autocomplete="name" placeholder="Customer name"></label>
+				<label class="form-wide">Display caption<input id="customerName" name="displayCaption" type="text" required autocomplete="off" placeholder="Customer caption"></label>
 				<label class="form-wide">Phone <span class="optional-label">Optional</span><input id="customerPhone" name="phone" type="tel" maxlength="40" autocomplete="tel" placeholder="Phone number"></label>
-				<label class="form-wide">Email <span class="optional-label">Optional</span><input id="customerEmail" name="email" type="email" maxlength="254" autocomplete="email" placeholder="Email address"></label>
+				<label class="form-wide">Email <span class="optional-label">Optional</span><input id="customerEmail" name="email" type="text" autocomplete="off" placeholder="Email address"></label>
+				<label class="form-wide">Notes <span class="optional-label">Optional</span><textarea id="customerNotes" name="notes" rows="3" placeholder="Internal notes about this customer"></textarea></label>
 			</div>
 			<div class="reservation-dialog-footer"><button class="subtle-button" id="customerCancel" type="button">Cancel</button><button class="primary-button" type="submit">Create customer</button></div>
 		</form>
