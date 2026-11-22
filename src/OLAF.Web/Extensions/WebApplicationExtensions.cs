@@ -27,6 +27,7 @@ public static class WebApplicationExtensions
 
 		app.MapStaticAssets()
 			.AllowAnonymous();
+		app.MapControllers();
 		app.MapRazorPages()
 			.WithStaticAssets();
 
