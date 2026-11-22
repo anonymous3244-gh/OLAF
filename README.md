@@ -17,9 +17,9 @@ The application provides a centralized place to manage facility availability, co
 
 ## Project status
 
-**Status: Phase 0 complete; Phase 1 not started.**
+**Status: Phase 0 complete; Phase 1 in progress.**
 
-The core OLAF business functionality has not yet been implemented. Requirements and architecture are documented before feature development begins.
+The core OLAF business functionality has not yet been implemented. The application foundation, authentication and initial responsive UI are established. Core business functionality is the next implementation focus.
 
 ## Documentation
 
