@@ -114,7 +114,7 @@
 	<dialog class="reservation-dialog" id="reservationDialog" aria-labelledby="reservationDialogTitle">
 		<form id="reservationForm">
 			<div class="reservation-dialog-header">
-				<div><p class="dialog-eyebrow" id="reservationDialogEyebrow">CALENDAR</p><h2 id="reservationDialogTitle">New reservation</h2></div>
+				<div><p class="dialog-eyebrow" id="reservationDialogEyebrow">RESERVATION MANAGEMENT</p><h2 id="reservationDialogTitle">New reservation</h2></div>
 				<button class="facility-panel-close" id="reservationDialogClose" type="button" aria-label="Close dialog">×</button>
 			</div>
 			<div class="reservation-form-grid">
@@ -141,7 +141,13 @@
 	</dialog>
 	<dialog class="customer-dialog" id="customerDialog" aria-labelledby="customerDialogTitle">
 		<form id="customerForm">
-			<div class="reservation-dialog-header"><div><p class="dialog-eyebrow">CUSTOMER</p><h2 id="customerDialogTitle">New customer</h2></div><button class="facility-panel-close" id="customerDialogClose" type="button" aria-label="Close customer dialog">×</button></div>
+			<div class="reservation-dialog-header">
+				<div>
+					<p class="dialog-eyebrow">CUSTOMER MANAGEMENT</p>
+					<h2 id="customerDialogTitle">New customer</h2>
+				</div>
+				<button class="facility-panel-close" id="customerDialogClose" type="button" aria-label="Close customer dialog">×</button>
+			</div>
 			<div class="reservation-form-grid">
 				<label class="form-wide">Display caption<input id="customerName" name="displayCaption" type="text" required autocomplete="off" placeholder="Customer caption"></label>
 				<label class="form-wide">Phone <span class="optional-label">Optional</span><input id="customerPhone" name="phone" type="tel" autocomplete="tel" placeholder="Phone number"></label>

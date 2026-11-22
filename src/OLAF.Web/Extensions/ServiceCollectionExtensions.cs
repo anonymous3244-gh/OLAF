@@ -3,12 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using OLAF.Application.Authorization;
 using OLAF.Application.Customers;
+using OLAF.Contracts.Authorization;
 using OLAF.Infrastructure.Persistence;
-using OLAF.Infrastructure.Customers;
-using OLAF.Web.Identity;
 using OLAF.Web.Htmx;
+using OLAF.Web.Identity;
 using System;
 using System.Threading.Tasks;
 
@@ -27,7 +26,7 @@ public static class ServiceCollectionExtensions
 		services.AddDatabaseDeveloperPageExceptionFilter();
 
 		services.AddInMemoryCustomerRepository();
-		services.AddSingleton<TimeProvider>(TimeProvider.System);
+		services.AddSingleton(TimeProvider.System);
 		services.AddScoped<CustomerService>();
 
 		services
@@ -39,34 +38,34 @@ public static class ServiceCollectionExtensions
 
 		services.ConfigureApplicationCookie(options =>
 			{
-			options.Events.OnRedirectToLogin = context =>
-			{
-				if (context.Request.Path.StartsWithSegments("/api"))
+				options.Events.OnRedirectToLogin = context =>
 				{
-					context.Response.StatusCode = 401;
+					if (context.Request.Path.StartsWithSegments("/api"))
+					{
+						context.Response.StatusCode = 401;
+						return Task.CompletedTask;
+					}
+
+					context.Response.Redirect(context.RedirectUri);
 					return Task.CompletedTask;
-				}
+				};
 
-				context.Response.Redirect(context.RedirectUri);
-				return Task.CompletedTask;
-			};
-
-			options.Events.OnRedirectToAccessDenied = context =>
-			{
-				if (context.Request.Path.StartsWithSegments("/api"))
+				options.Events.OnRedirectToAccessDenied = context =>
 				{
-					context.Response.StatusCode = 403;
+					if (context.Request.Path.StartsWithSegments("/api"))
+					{
+						context.Response.StatusCode = 403;
+						return Task.CompletedTask;
+					}
+
+					var redirectUri = context.HttpContext.User.HasClaim(OlafClaimTypes.MustChangePassword, "true")
+						? "/Identity/Account/ChangePassword"
+						: context.RedirectUri;
+
+					context.Response.Redirect(redirectUri);
 					return Task.CompletedTask;
-				}
-
-				var redirectUri = context.HttpContext.User.HasClaim(OlafClaimTypes.MustChangePassword, "true")
-					? "/Identity/Account/ChangePassword"
-					: context.RedirectUri;
-
-				context.Response.Redirect(redirectUri);
-				return Task.CompletedTask;
-			};
-		});
+				};
+			});
 
 		services.AddScoped<HtmxResultFilter>();
 		services.AddControllersWithViews(options => options.Filters.AddService<HtmxResultFilter>());

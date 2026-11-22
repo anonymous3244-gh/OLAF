@@ -9,6 +9,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\OLAF.Application\OLAF.Application.csproj" />
+		<ProjectReference Include="..\OLAF.Contracts\OLAF.Contracts.csproj" />
 		<ProjectReference Include="..\OLAF.Infrastructure\OLAF.Infrastructure.csproj" />
 	</ItemGroup>
 

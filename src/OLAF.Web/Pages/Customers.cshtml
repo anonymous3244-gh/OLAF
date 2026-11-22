@@ -33,14 +33,23 @@
 </section>
 <dialog class="customer-dialog" id="customerManagementDialog" aria-labelledby="customerManagementTitle">
 	<form id="customerManagementForm">
-		<div class="reservation-dialog-header"><div><p class="dialog-eyebrow">CUSTOMER</p><h2 id="customerManagementTitle">New customer</h2></div><button class="facility-panel-close" id="customerManagementClose" type="button" aria-label="Close dialog">×</button></div>
-		<div class="reservation-form-grid">
-			<label class="form-wide">Display caption<input id="managedCustomerCaption" required autocomplete="off"></label>
-			<label class="form-wide">Phone <span class="optional-label">Optional</span><input id="managedCustomerPhone" type="text"></label>
-			<label class="form-wide">Email <span class="optional-label">Optional</span><input id="managedCustomerEmail" type="text"></label>
-			<label class="form-wide">Notes <span class="optional-label">Optional</span><textarea id="managedCustomerNotes" rows="4"></textarea></label>
+		<div class="reservation-dialog-header">
+			<div>
+				<p  class="dialog-eyebrow">CUSTOMER MANAGEMENT</p>
+				<h2 id="customerManagementTitle">New customer</h2>
+			</div>
+			<button class="facility-panel-close" id="customerManagementClose" type="button" aria-label="Close dialog">×</button>
 		</div>
-		<div class="reservation-dialog-footer"><button class="subtle-button" id="customerManagementCancel" type="button">Cancel</button><button class="primary-button" type="submit">Save customer</button></div>
+		<div class="reservation-form-grid">
+			<label class="form-wide">Display caption * <input id="managedCustomerCaption" required autocomplete="off"></label>
+			<label class="form-wide">Phone <input id="managedCustomerPhone" type="text"></label>
+			<label class="form-wide">Email <input id="managedCustomerEmail" type="text"></label>
+			<label class="form-wide">Notes <textarea id="managedCustomerNotes" rows="4"></textarea></label>
+		</div>
+		<div class="reservation-dialog-footer">
+			<button class="subtle-button" id="customerManagementCancel" type="button">Cancel</button>
+			<button class="primary-button" type="submit">Save customer</button>
+		</div>
 	</form>
 </dialog>
 @section Scripts {

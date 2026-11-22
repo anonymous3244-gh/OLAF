@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using OLAF.Application.Customers;
+using OLAF.Contracts.Repositories;
+using OLAF.Infrastructure.Customers;
 
-namespace OLAF.Infrastructure.Customers;
+namespace OLAF.Web.Extensions;
 
 public static class CustomerServiceCollectionExtensions
 {

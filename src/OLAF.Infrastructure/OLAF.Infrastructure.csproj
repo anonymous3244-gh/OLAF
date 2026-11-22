@@ -7,8 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\OLAF.Application\OLAF.Application.csproj" />
-		<ProjectReference Include="..\OLAF.Domain\OLAF.Domain.csproj" />
+		<ProjectReference Include="..\OLAF.Contracts\OLAF.Contracts.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

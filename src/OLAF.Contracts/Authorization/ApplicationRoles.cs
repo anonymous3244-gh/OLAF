@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace OLAF.Application.Authorization;
+namespace OLAF.Contracts.Authorization;
 
 public static class ApplicationRoles
 {

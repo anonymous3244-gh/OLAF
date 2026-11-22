@@ -1,4 +1,4 @@
-﻿namespace OLAF.Application.Authorization;
+﻿namespace OLAF.Contracts.Authorization;
 
 public static class AuthorizationPolicies
 {

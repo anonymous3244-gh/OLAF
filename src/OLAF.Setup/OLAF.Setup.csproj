@@ -10,6 +10,7 @@
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<ProjectReference Include="..\OLAF.Contracts\OLAF.Contracts.csproj" />
 		<ProjectReference Include="..\OLAF.Infrastructure\OLAF.Infrastructure.csproj" />
 	</ItemGroup>
 

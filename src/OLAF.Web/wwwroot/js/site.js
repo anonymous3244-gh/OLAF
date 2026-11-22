@@ -499,7 +499,7 @@
       customerSelectionHint.textContent = 'This is sample calendar data. Select a customer record before saving.';
     } else clearCustomerSelection();
     reservationDialogTitle.textContent = editingReservation ? 'Edit reservation' : 'New reservation';
-    reservationDialogEyebrow.textContent = editingReservation ? 'EDIT RESERVATION' : 'CALENDAR';
+    reservationDialogEyebrow.textContent = 'RESERVATION MANAGEMENT';
     updateTypeHint();
     reservationDialog.showModal();
     (reservationType.value === 'customer' ? customerSearch : reservationTitle).focus();

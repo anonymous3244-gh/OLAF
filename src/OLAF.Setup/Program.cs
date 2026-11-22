@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OLAF.Application.Authorization;
+using OLAF.Contracts.Authorization;
 using OLAF.Infrastructure.Persistence;
 using OLAF.Setup.Exceptions;
 using System;
