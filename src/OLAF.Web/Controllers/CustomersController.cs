@@ -48,6 +48,12 @@ public sealed class CustomersController : Controller
 		[FromBody] CustomerWriteRequest request,
 		CancellationToken cancellationToken = default)
 	{
+		if (string.IsNullOrWhiteSpace(request.DisplayCaption))
+		{
+			ModelState.AddModelError(nameof(request.DisplayCaption), "A customer display caption is required.");
+			return ValidationProblem(ModelState);
+		}
+
 		var customer = await customers.CreateAsync(
 			new CreateCustomerInput(request.DisplayCaption, request.Phone, request.Email, request.Notes),
 			CurrentUser(),
@@ -62,6 +68,12 @@ public sealed class CustomersController : Controller
 		[FromBody] CustomerWriteRequest request,
 		CancellationToken cancellationToken = default)
 	{
+		if (string.IsNullOrWhiteSpace(request.DisplayCaption))
+		{
+			ModelState.AddModelError(nameof(request.DisplayCaption), "A customer display caption is required.");
+			return ValidationProblem(ModelState);
+		}
+
 		var customer = await customers.UpdateAsync(
 			id,
 			new UpdateCustomerInput(request.DisplayCaption, request.Phone, request.Email, request.Notes),
