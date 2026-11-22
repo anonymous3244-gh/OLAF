@@ -358,8 +358,8 @@
     });
   });
 
-  const dateKey = (date) => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
-  const toTime = (hour, minute) => String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
+  function dateKey(date) { return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-'); }
+  function toTime(hour, minute) { return String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0'); }
   const selectedUnitIds = () => [...selectedFacilities];
   const populateUnitOptions = (preferredId) => {
     reservationUnit.replaceChildren();
