@@ -8,6 +8,8 @@ public static class CustomerServiceCollectionExtensions
 	public static IServiceCollection AddInMemoryCustomerRepository(this IServiceCollection services)
 	{
 		services.AddSingleton<ICustomerRepository, InMemoryCustomerRepository>();
+		services.AddSingleton(TimeProvider.System);
+		services.AddScoped<CustomerService>();
 		return services;
 	}
 }
