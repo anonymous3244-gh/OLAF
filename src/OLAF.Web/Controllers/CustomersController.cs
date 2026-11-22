@@ -78,7 +78,8 @@ public sealed class CustomersController : Controller
 		CancellationToken cancellationToken = default)
 	{
 		var customer = await customers.SetActiveAsync(id, request.IsActive, CurrentUser(), cancellationToken);
-		return customer is null ? NotFound() : CustomerDto.From(customer);
+		if (customer is null) return NotFound();
+		return CustomerDto.From(customer);
 	}
 
 	private string CurrentUser()
