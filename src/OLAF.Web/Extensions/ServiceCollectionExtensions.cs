@@ -7,6 +7,7 @@ using OLAF.Application.Authorization;
 using OLAF.Infrastructure.Persistence;
 using OLAF.Infrastructure.Customers;
 using OLAF.Web.Identity;
+using OLAF.Web.Htmx;
 using System;
 using System.Threading.Tasks;
 
@@ -46,6 +47,8 @@ public static class ServiceCollectionExtensions
 			};
 		});
 
+		services.AddScoped<HtmxResultFilter>();
+		services.AddControllersWithViews(options => options.Filters.AddService<HtmxResultFilter>());
 		services.AddRazorPages();
 
 		services.AddAuthorization(options =>
