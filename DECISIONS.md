@@ -425,3 +425,18 @@ Center the current page title in the shared header on desktop and mobile; do not
 - **Related feature:** USR
 
 On mobile, the navigation drawer occupies the full screen width. Tapping the hamburger button again closes it; tapping the dimmed area outside the drawer does nothing. When navigation uses a full-page load, the drawer disappears naturally with the page change. When navigation updates page content in place (such as SPA/HTMX navigation), close the drawer before switching the content. Other drawer details, including Escape-key behavior and the expanded/collapsed presentation, remain implementation choices.
+
+
+### DEC-053 — Customer record fields and lifecycle
+- **Date:** 2026-11-22
+- **Status:** Accepted
+- **Related feature:** CUS
+
+Customer records contain a required manager-controlled display caption, optional phone number, optional email address, optional free-text Notes, active state, and `UpdatedBy`/`UpdatedAt`. Phone numbers and email addresses are non-unique and are not normalized or format-validated. Captions are also non-unique. Customer records are never permanently deleted: Rental Managers can deactivate and reactivate them. Deactivated customers remain visible in historical reservations and reports but are unavailable for new reservations. The audit log preserves the first values of `UpdatedBy` and `UpdatedAt` as creation information; do not add separate `CreatedBy` or `CreatedAt` properties.
+
+### DEC-054 — Customer activation endpoint
+- **Date:** 2026-11-22
+- **Status:** Accepted
+- **Related feature:** CUS
+
+Use `PUT /api/v1/customers/{id}/activation` to change a customer's active state in either direction. The request explicitly supplies the desired active state; do not create separate activation and deactivation endpoints.
