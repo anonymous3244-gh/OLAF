@@ -4,21 +4,9 @@ namespace OLAF.Domain.Customers;
 
 public sealed class Customer
 {
-	private Customer(
-		int id,
-		string displayCaption,
-		string? phone,
-		string? email,
-		string? notes,
-		bool isActive,
-		string updatedBy,
-		DateTimeOffset updatedAt)
+	private Customer(int id, string displayCaption, string? phone, string? email, string? notes, bool isActive, string updatedBy, DateTimeOffset updatedAt)
 	{
-		if (id <= 0)
-		{
-			throw new ArgumentOutOfRangeException(nameof(id));
-		}
-
+		if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
 		Id = id;
 		DisplayCaption = RequireCaption(displayCaption);
 		Phone = phone;
@@ -29,91 +17,41 @@ public sealed class Customer
 		UpdatedAt = updatedAt;
 	}
 
-	public int Id { get; private set; }
+	public int Id { get; }
+	public string DisplayCaption { get; }
+	public string? Phone { get; }
+	public string? Email { get; }
+	public string? Notes { get; }
+	public bool IsActive { get; }
+	public string UpdatedBy { get; }
+	public DateTimeOffset UpdatedAt { get; }
 
-	public string DisplayCaption { get; private set; }
-
-	public string? Phone { get; private set; }
-
-	public string? Email { get; private set; }
-
-	public string? Notes { get; private set; }
-
-	public bool IsActive { get; private set; }
-
-	public string UpdatedBy { get; private set; }
-
-	public DateTimeOffset UpdatedAt { get; private set; }
-
-	public static Customer Create(
-		int id,
-		string displayCaption,
-		string? phone,
-		string? email,
-		string? notes,
-		string updatedBy,
-		DateTimeOffset updatedAt)
+	public static Customer Create(int id, string displayCaption, string? phone, string? email, string? notes, string updatedBy, DateTimeOffset updatedAt)
 	{
-		return new Customer(
-			id,
-			displayCaption,
-			phone,
-			email,
-			notes,
-			true,
-			updatedBy,
-			updatedAt);
+		return new Customer(id, displayCaption, phone, email, notes, true, updatedBy, updatedAt);
 	}
 
-	public void Update(
-		string displayCaption,
-		string? phone,
-		string? email,
-		string? notes,
-		string updatedBy,
-		DateTimeOffset updatedAt)
+	public Customer Update(string displayCaption, string? phone, string? email, string? notes, string updatedBy, DateTimeOffset updatedAt)
 	{
-		DisplayCaption = RequireCaption(displayCaption);
-		Phone = phone;
-		Email = email;
-		Notes = notes;
-		RecordUpdate(updatedBy, updatedAt);
+		return new Customer(Id, displayCaption, phone, email, notes, IsActive, updatedBy, updatedAt);
 	}
 
-	public void SetActive(bool isActive, string updatedBy, DateTimeOffset updatedAt)
+	public Customer SetActive(bool isActive, string updatedBy, DateTimeOffset updatedAt)
 	{
-		if (IsActive == isActive)
-		{
-			return;
-		}
-
-		IsActive = isActive;
-		RecordUpdate(updatedBy, updatedAt);
+		return IsActive == isActive
+			? this
+			: new Customer(Id, DisplayCaption, Phone, Email, Notes, isActive, updatedBy, updatedAt);
 	}
 
-	private void RecordUpdate(string updatedBy, DateTimeOffset updatedAt)
+	private static string RequireCaption(string value)
 	{
-		UpdatedBy = RequireUpdatedBy(updatedBy);
-		UpdatedAt = updatedAt;
+		if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException("A customer display caption is required.", nameof(value));
+		return value;
 	}
 
-	private static string RequireCaption(string displayCaption)
+	private static string RequireUpdatedBy(string value)
 	{
-		if (string.IsNullOrWhiteSpace(displayCaption))
-		{
-			throw new ArgumentException("A customer display caption is required.", nameof(displayCaption));
-		}
-
-		return displayCaption;
-	}
-
-	private static string RequireUpdatedBy(string updatedBy)
-	{
-		if (string.IsNullOrWhiteSpace(updatedBy))
-		{
-			throw new ArgumentException("The user performing the change is required.", nameof(updatedBy));
-		}
-
-		return updatedBy;
+		if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException("The user performing the change is required.", nameof(value));
+		return value;
 	}
 }
