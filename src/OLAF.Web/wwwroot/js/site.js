@@ -339,6 +339,7 @@
   const reservationUnits = facilityCheckboxes.map((checkbox) => ({ id: checkbox.value, label: checkbox.closest('.facility-option').querySelector('strong').textContent }));
   let editingReservation = null;
   let selectedCustomerId = null;
+  let selectedCustomerRecord = null;
   let customers = [];
 
   // Make the illustrative reservations editable too, using their displayed calendar dates.
@@ -417,6 +418,7 @@
       if (!response.ok) throw new Error('Customer search failed.');
       const result = await response.json();
       const matches = result.customers || [];
+      customers = matches;
     matches.forEach((customer) => {
       const option = document.createElement('button');
       option.type = 'button';
@@ -445,12 +447,14 @@
   };
   const selectCustomer = (customer) => {
     selectedCustomerId = customer.id;
+    selectedCustomerRecord = customer;
     customerSearch.value = customer.displayCaption;
     customerSearchResults.hidden = true;
     customerSelectionHint.textContent = [customer.phone, customer.email].filter(Boolean).join(' · ') || 'Customer selected — contact details can be added later.';
   };
   const clearCustomerSelection = () => {
     selectedCustomerId = null;
+    selectedCustomerRecord = null;
     customerSelectionHint.textContent = 'Choose an existing customer or create a new one.';
   };
   customerSearch?.addEventListener('input', () => {
@@ -614,7 +618,7 @@
     const data = {
       type: reservationType.value,
       unitId: reservationUnit.value,
-      title: isCustomer ? customers.find((customer) => customer.id === selectedCustomerId)?.displayCaption : reservationTitle.value.trim(),
+      title: isCustomer ? selectedCustomerRecord?.displayCaption : reservationTitle.value.trim(),
       customerId: isCustomer ? selectedCustomerId : null,
       startDate: reservationStartDate.value,
       endDate: reservationEndDate.value,
