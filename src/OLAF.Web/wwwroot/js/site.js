@@ -311,6 +311,186 @@
   });
   renderDate();
 
+
+  // Interactive calendar prototype: changes remain in the page and are not persisted.
+  const reservationDialog = document.getElementById('reservationDialog');
+  const reservationForm = document.getElementById('reservationForm');
+  const reservationType = document.getElementById('reservationType');
+  const reservationUnit = document.getElementById('reservationUnit');
+  const reservationTitle = document.getElementById('reservationTitle');
+  const reservationDate = document.getElementById('reservationDate');
+  const reservationStart = document.getElementById('reservationStart');
+  const reservationEnd = document.getElementById('reservationEnd');
+  const reservationTypeHint = document.getElementById('reservationTypeHint');
+  const reservationDialogTitle = document.getElementById('reservationDialogTitle');
+  const reservationDialogEyebrow = document.getElementById('reservationDialogEyebrow');
+  const reservationUnits = facilityCheckboxes.map((checkbox) => ({ id: checkbox.value, label: checkbox.closest('.facility-option').querySelector('strong').textContent }));
+  let editingReservation = null;
+
+  const dateKey = (date) => [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
+  const toTime = (hour, minute) => String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
+  const selectedUnitIds = () => [...selectedFacilities];
+  const populateUnitOptions = (preferredId) => {
+    reservationUnit.replaceChildren();
+    const candidates = selectedUnitIds().length ? selectedUnitIds() : reservationUnits.map((unit) => unit.id);
+    reservationUnits.filter((unit) => candidates.includes(unit.id)).forEach((unit) => {
+      const option = document.createElement('option');
+      option.value = unit.id;
+      option.textContent = unit.label;
+      reservationUnit.appendChild(option);
+    });
+    if (preferredId && candidates.includes(preferredId)) reservationUnit.value = preferredId;
+    reservationUnit.disabled = candidates.length === 1;
+  };
+  const updateTypeHint = () => {
+    const hints = {
+      customer: 'Customer reservations automatically create a cleaning task.',
+      cleaning: 'Use the title to describe the cleaning task.',
+      offline: 'Use the title to describe the maintenance or offline period.'
+    };
+    reservationTypeHint.textContent = hints[reservationType.value];
+    reservationTitle.placeholder = reservationType.value === 'customer' ? 'Customer name' : reservationType.value === 'cleaning' ? 'Cleaning task' : 'Maintenance / offline reason';
+  };
+  const openReservationDialog = ({ date, start, end, unitId, reservation } = {}) => {
+    if (!reservationDialog) return;
+    editingReservation = reservation || null;
+    reservationForm.reset();
+    populateUnitOptions(unitId || reservation?.dataset.facility);
+    reservationType.value = reservation?.dataset.type || 'customer';
+    reservationTitle.value = reservation?.querySelector('b')?.textContent || '';
+    reservationDate.value = reservation?.dataset.date || dateKey(date || selectedDate);
+    reservationStart.value = reservation?.dataset.startTime || start || '09:00';
+    reservationEnd.value = reservation?.dataset.endTime || end || '10:00';
+    reservationDialogTitle.textContent = editingReservation ? 'Edit reservation' : 'New reservation';
+    reservationDialogEyebrow.textContent = editingReservation ? 'EDIT RESERVATION' : 'CALENDAR';
+    reservationType.disabled = false;
+    updateTypeHint();
+    reservationDialog.showModal();
+    reservationTitle.focus();
+  };
+  const closeReservationDialog = () => {
+    if (reservationDialog?.open) reservationDialog.close();
+    editingReservation = null;
+  };
+  document.getElementById('newReservationButton')?.addEventListener('click', () => {
+    const chosenUnits = selectedUnitIds();
+    if (!chosenUnits.length) {
+      window.alert('Select at least one facility in the Facilities filter first.');
+      return;
+    }
+    openReservationDialog({ date: selectedDate, start: '09:00', end: '10:00' });
+  });
+  document.getElementById('reservationDialogClose')?.addEventListener('click', closeReservationDialog);
+  document.getElementById('reservationCancel')?.addEventListener('click', closeReservationDialog);
+  reservationType?.addEventListener('change', updateTypeHint);
+  // Keep editing locked: Escape and backdrop clicks do not discard the form.
+  reservationDialog?.addEventListener('cancel', (event) => event.preventDefault());
+  reservationDialog?.addEventListener('click', (event) => {
+    if (event.target === reservationDialog) event.preventDefault();
+  });
+
+  const setReservationData = (element, data) => {
+    element.dataset.facility = data.unitId;
+    element.dataset.date = data.date;
+    element.dataset.type = data.type;
+    element.dataset.startTime = data.start;
+    element.dataset.endTime = data.end;
+    element.querySelector('b').textContent = data.title;
+    const unitLabel = reservationUnits.find((unit) => unit.id === data.unitId)?.label || data.unitId;
+    element.querySelector('span').textContent = unitLabel + ' · ' + data.start + '–' + data.end;
+    element.classList.remove('customer-block', 'cleaning-block', 'offline-block');
+    element.classList.add(data.type + '-block');
+    const startParts = data.start.split(':').map(Number);
+    const endParts = data.end.split(':').map(Number);
+    const startValue = startParts[0] + startParts[1] / 60;
+    let endValue = endParts[0] + endParts[1] / 60;
+    if (endValue <= startValue) endValue += 24;
+    if (element.classList.contains('mobile-reservation')) {
+      element.dataset.start = String(startValue);
+      element.dataset.end = String(endValue);
+    } else {
+      element.dataset.timeRange = data.start + '–' + data.end;
+    }
+  };
+  const makeReservationElement = (data, mobile) => {
+    const element = document.createElement('div');
+    element.className = (mobile ? 'mobile-reservation ' : 'reservation ') + data.type + '-block';
+    element.innerHTML = '<b></b><span></span>';
+    setReservationData(element, data);
+    element.addEventListener('click', (event) => {
+      event.stopPropagation();
+      openReservationDialog({ reservation: element });
+    });
+    return element;
+  };
+  const getDesktopTrackForDate = (date) => {
+    const monday = getMonday(date);
+    const dayIndex = Math.round((new Date(date.getFullYear(), date.getMonth(), date.getDate()) - monday) / 86400000);
+    return desktopTracks[dayIndex] || null;
+  };
+  const saveReservation = (data) => {
+    if (editingReservation) {
+      setReservationData(editingReservation, data);
+    } else {
+      const desktopTrack = getDesktopTrackForDate(new Date(data.date + 'T00:00:00'));
+      if (desktopTrack) desktopTrack.appendChild(makeReservationElement(data, false));
+      if (mobileTrack) mobileTrack.appendChild(makeReservationElement(data, true));
+    }
+    renderDate();
+    applyFacilitySelection();
+    closeReservationDialog();
+  };
+  reservationForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!reservationForm.reportValidity()) return;
+    const data = {
+      type: reservationType.value,
+      unitId: reservationUnit.value,
+      title: reservationTitle.value.trim(),
+      date: reservationDate.value,
+      start: reservationStart.value,
+      end: reservationEnd.value
+    };
+    if (!data.title || !data.unitId || !data.date || !data.start || !data.end) return;
+    if (data.end <= data.start) {
+      window.alert('The end time must be later than the start time.');
+      return;
+    }
+    saveReservation(data);
+  });
+
+  const timeFromTrackClick = (track, event) => {
+    const bounds = track.getBoundingClientRect();
+    const hour = Math.max(0, Math.min(23.75, (event.clientY - bounds.top) / bounds.height * 24));
+    const minutes = Math.round(hour * 4) * 15;
+    const startMinutes = Math.min(1425, minutes);
+    const endMinutes = startMinutes + 60;
+    return { start: toTime(Math.floor(startMinutes / 60), startMinutes % 60), end: toTime(Math.floor(endMinutes / 60), endMinutes % 60) };
+  };
+  desktopTracks.forEach((track) => track.addEventListener('click', (event) => {
+    if (event.target.closest('.reservation')) return;
+    const column = track.closest('.day-column');
+    const index = [...column.parentElement.querySelectorAll('.day-column')].indexOf(column);
+    const date = getMonday(selectedDate);
+    date.setDate(date.getDate() + index);
+    const times = timeFromTrackClick(track, event);
+    const chosenUnits = selectedUnitIds();
+    if (!chosenUnits.length) {
+      window.alert('Select at least one facility in the Facilities filter first.');
+      return;
+    }
+    openReservationDialog({ date, ...times });
+  }));
+  mobileTrack?.addEventListener('click', (event) => {
+    if (event.target.closest('.mobile-reservation')) return;
+    const times = timeFromTrackClick(mobileTrack, event);
+    if (!selectedUnitIds().length) {
+      window.alert('Select at least one facility in the Facilities filter first.');
+      return;
+    }
+    openReservationDialog({ date: selectedDate, ...times });
+  });
+
   // Center the current-time line once when today's calendar first opens.
   if (calendarFrame && selectedDate.getTime() === new Date().setHours(0, 0, 0, 0)) {
     requestAnimationFrame(() => {
