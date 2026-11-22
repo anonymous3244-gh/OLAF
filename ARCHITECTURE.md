@@ -99,7 +99,7 @@ Keep responsibilities distinct:
 
 API DTOs must remain separate from domain entities. Application services depend on repository interfaces rather than concrete Infrastructure classes.
 
-Initially, implement business repositories in memory within Infrastructure while domain models and workflows stabilize. Do not add business EF Core entities or database migrations during this stage. When the domain schema is stable, consolidate migrations into a new initial migration that includes both Identity and OLAF business data; recreate the development database if necessary. Do not use `EnsureCreated()` as a temporary substitute for the migrations workflow.
+Initially, implement business repositories in memory within Infrastructure while domain models and workflows stabilize. Repository implementations own generated identifiers; callers submit new-record data without IDs and receive the created entity. In-memory repositories must make ID allocation and insertion atomic. Prefer immutable domain snapshots so repository locks protect collection operations without exposing mutable shared objects. Do not add business EF Core entities or database migrations during this stage. When the domain schema is stable, consolidate migrations into a new initial migration that includes both Identity and OLAF business data; recreate the development database if necessary. Do not use `EnsureCreated()` as a temporary substitute for the migrations workflow.
 
 ## 10. Reuse of existing libraries
 
