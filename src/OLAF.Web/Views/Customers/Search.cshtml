@@ -1,0 +1,8 @@
+@model OLAF.Web.Controllers.CustomerSearchResponse
+@foreach (var customer in Model.Customers)
+{
+	<button type="button" class="customer-search-option" data-customer-id="@customer.Id">
+		<strong>@customer.DisplayCaption</strong>
+		<span>@customer.Phone @customer.Email</span>
+	</button>
+}
