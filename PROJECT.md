@@ -43,15 +43,18 @@ Customer management is part of the initial release.
 Managers must be able to:
 - Create and edit customer records.
 - Assign and maintain a customer display caption used to recognize the customer operationally.
-- Search and browse existing customers.
+- Search and browse active customers.
 - View customer reservation history.
-- Maintain internal comments and relevant customer information.
+- Add and edit optional free-text notes.
+- Deactivate and reactivate customer records.
 
-The display caption is entered and controlled by the manager. It may be the customer's name or a mnemonic label that helps the manager recognize them later (for example, "John Smith new" or "John Smith funny"). OLAF must persist the caption as entered; it must not generate suffixes or otherwise rename customers automatically. The caption is an operational identifier, not a guarantee of the customer's legal identity.
+Customer records are never permanently deleted. Deactivated customers remain available in historical reservations and reports, but cannot be selected for new reservations. Rental Managers can deactivate and reactivate customers.
 
-Phone number and email address are optional contact information. Customer names and captions are not required to be unique. Customer search supports multi-word queries using AND matching: every query word must match at least one of the caption, phone number or email address, and different words may match different fields.
+The display caption is entered and controlled by the manager. It may be the customer's name or a mnemonic label that helps the manager recognize them later (for example, "John Smith new" or "John Smith funny"). OLAF must persist the caption as entered; it must not generate suffixes or otherwise rename customers automatically. The caption is an operational identifier, not a guarantee of the customer's legal identity. Captions are not required to be unique.
 
-Other customer information may include reservation history, internal comments and relevant operational information such as a risk assessment.
+Phone number and email address are optional contact information. Neither field is unique, normalized or format-validated. Customer search supports multi-word queries using AND matching: every query word must match at least one of the caption, phone number or email address, and different words may match different fields.
+
+All customer records maintain `UpdatedBy` and `UpdatedAt`. The audit log preserves their original values as the record's creation information; separate `CreatedBy` and `CreatedAt` fields are not used.
 
 During reservation creation, the interface must provide:
 - A searchable dropdown for selecting an existing customer.
