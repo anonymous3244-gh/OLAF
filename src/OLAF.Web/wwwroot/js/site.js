@@ -335,19 +335,11 @@
   const customerName = document.getElementById('customerName');
   const customerPhone = document.getElementById('customerPhone');
   const customerEmail = document.getElementById('customerEmail');
+  const customerNotes = document.getElementById('customerNotes');
   const reservationUnits = facilityCheckboxes.map((checkbox) => ({ id: checkbox.value, label: checkbox.closest('.facility-option').querySelector('strong').textContent }));
   let editingReservation = null;
   let selectedCustomerId = null;
-  let nextCustomerId = 7;
-  // Illustrative in-memory customer records; these are not persisted.
-  const customers = [
-    { id: 1, name: 'Alex Morgan', phone: '+381 64 111 2233', email: 'alex.morgan@example.test' },
-    { id: 2, name: 'Jamie Wilson', phone: '+381 63 222 3344', email: 'jamie.wilson@example.test' },
-    { id: 3, name: 'Taylor Reed', phone: '+381 65 333 4455', email: 'taylor.reed@example.test' },
-    { id: 4, name: 'Jordan Lee', phone: '+381 64 444 5566', email: 'jordan.lee@example.test' },
-    { id: 5, name: 'Sam Parker', phone: '+381 62 555 6677', email: 'sam.parker@example.test' },
-    { id: 6, name: 'Casey Smith', phone: '+381 60 666 7788', email: 'casey.smith@example.test' }
-  ];
+  let customers = [];
 
   // Make the illustrative reservations editable too, using their displayed calendar dates.
   document.querySelectorAll('.desktop-calendar .reservation').forEach((element) => {
@@ -415,20 +407,23 @@
     reservationTitle.required = !isCustomer;
     reservationTitle.placeholder = reservationType.value === 'cleaning' ? 'Cleaning task' : 'Maintenance / offline reason';
   };
-  const renderCustomerSearch = () => {
+  const renderCustomerSearch = async () => {
     if (!customerSearchResults) return;
-    const query = customerSearch.value.trim().toLocaleLowerCase();
+    const query = customerSearch.value.trim();
     customerSearchResults.replaceChildren();
-    const matches = query ? customers.filter((customer) =>
-      [customer.name, customer.phone, customer.email].some((value) => value && value.toLocaleLowerCase().includes(query))
-    ) : [];
+    if (!query) { customerSearchResults.hidden = true; return; }
+    try {
+      const response = await fetch('/api/v1/customers?s=' + encodeURIComponent(query), { credentials: 'same-origin' });
+      if (!response.ok) throw new Error('Customer search failed.');
+      const result = await response.json();
+      const matches = result.customers || [];
     matches.forEach((customer) => {
       const option = document.createElement('button');
       option.type = 'button';
       option.className = 'customer-search-option';
       option.setAttribute('role', 'option');
       option.innerHTML = '<strong></strong><span></span>';
-      option.querySelector('strong').textContent = customer.name;
+      option.querySelector('strong').textContent = customer.displayCaption;
       option.querySelector('span').textContent = [customer.phone, customer.email].filter(Boolean).join(' · ') || 'No contact details';
       option.addEventListener('click', () => selectCustomer(customer));
       customerSearchResults.appendChild(option);
@@ -439,11 +434,18 @@
       empty.textContent = 'No matching customer. Use ＋ to create a new one.';
       customerSearchResults.appendChild(empty);
     }
-    customerSearchResults.hidden = !query;
+      customerSearchResults.hidden = false;
+    } catch (error) {
+      const failed = document.createElement('p');
+      failed.className = 'customer-search-empty';
+      failed.textContent = error.message;
+      customerSearchResults.appendChild(failed);
+      customerSearchResults.hidden = false;
+    }
   };
   const selectCustomer = (customer) => {
     selectedCustomerId = customer.id;
-    customerSearch.value = customer.name;
+    customerSearch.value = customer.displayCaption;
     customerSearchResults.hidden = true;
     customerSelectionHint.textContent = [customer.phone, customer.email].filter(Boolean).join(' · ') || 'Customer selected — contact details can be added later.';
   };
@@ -484,9 +486,9 @@
     const existingCustomer = existingName ? customers.find((customer) => customer.name === existingName) : null;
     if (existingCustomer) selectCustomer(existingCustomer);
     else if (existingName) {
-      const placeholderCustomer = { id: nextCustomerId++, name: existingName, phone: '', email: '' };
-      customers.push(placeholderCustomer);
-      selectCustomer(placeholderCustomer);
+      customerSearch.value = existingName;
+      clearCustomerSelection();
+      customerSelectionHint.textContent = 'This is sample calendar data. Select a customer record before saving.';
     } else clearCustomerSelection();
     reservationDialogTitle.textContent = editingReservation ? 'Edit reservation' : 'New reservation';
     reservationDialogEyebrow.textContent = editingReservation ? 'EDIT RESERVATION' : 'CALENDAR';
@@ -528,18 +530,27 @@
   customerForm?.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!customerForm.reportValidity()) return;
-    const customer = {
-      id: nextCustomerId++,
-      name: customerName.value.trim(),
-      phone: customerPhone.value.trim(),
-      email: customerEmail.value.trim()
+    const payload = {
+      displayCaption: customerName.value,
+      phone: customerPhone.value || null,
+      email: customerEmail.value || null,
+      notes: customerNotes?.value || null
     };
-    if (!customer.name) return;
-    customers.push(customer);
-    closeCustomerDialog();
-    selectCustomer(customer);
-    customerSearchResults.hidden = true;
-    customerSearch.focus();
+    try {
+      const response = await fetch('/api/v1/customers', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) throw new Error('Customer could not be created (' + response.status + ').');
+      const customer = await response.json();
+      closeCustomerDialog();
+      selectCustomer(customer);
+      customerSearchResults.hidden = true;
+      customerSearch.focus();
+    } catch (error) {
+      customerSelectionHint.textContent = error.message;
+    }
   });
 
   const setReservationData = (element, data) => {
@@ -603,7 +614,7 @@
     const data = {
       type: reservationType.value,
       unitId: reservationUnit.value,
-      title: isCustomer ? customers.find((customer) => customer.id === selectedCustomerId)?.name : reservationTitle.value.trim(),
+      title: isCustomer ? customers.find((customer) => customer.id === selectedCustomerId)?.displayCaption : reservationTitle.value.trim(),
       customerId: isCustomer ? selectedCustomerId : null,
       startDate: reservationStartDate.value,
       endDate: reservationEndDate.value,
