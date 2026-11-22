@@ -33,6 +33,11 @@ public sealed class Customer
 
 	public Customer Update(string displayCaption, string? phone, string? email, string? notes, string updatedBy, DateTimeOffset updatedAt)
 	{
+		if (DisplayCaption == displayCaption && Phone == phone && Email == email && Notes == notes)
+		{
+			return this;
+		}
+
 		return new Customer(Id, displayCaption, phone, email, notes, IsActive, updatedBy, updatedAt);
 	}
 
