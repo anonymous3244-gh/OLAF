@@ -39,7 +39,8 @@ public sealed class CustomersController : Controller
 	public async Task<ActionResult<CustomerDto>> Get(int id, CancellationToken cancellationToken = default)
 	{
 		var customer = await customers.GetByIdAsync(id, cancellationToken);
-		return customer is null ? NotFound() : CustomerDto.From(customer);
+		if (customer is null) return NotFound();
+		return CustomerDto.From(customer);
 	}
 
 	[HttpPost]
@@ -66,7 +67,8 @@ public sealed class CustomersController : Controller
 			new UpdateCustomerInput(request.DisplayCaption, request.Phone, request.Email, request.Notes),
 			CurrentUser(),
 			cancellationToken);
-		return customer is null ? NotFound() : CustomerDto.From(customer);
+		if (customer is null) return NotFound();
+		return CustomerDto.From(customer);
 	}
 
 	[HttpPut("{id:int}/activation")]
