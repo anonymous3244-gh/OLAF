@@ -323,6 +323,34 @@ Administrators and Rental Managers configure the global selected-facility color 
 
 Use a persistent, collapsible sidebar on desktop/tablet, expanded whenever OLAF is reopened. Expanded navigation shows icons and labels; collapsed navigation shows icons only. Tailor navigation to each role: Administrators receive the full application plus a collapsible Administration group containing User Management and Audit History; Rental Managers receive Calendar, Customers, Cleaning Staff, Notifications, Reports and Settings; Cleaning Staff receive Calendar and Notifications. Cleaning tasks are accessed through the Calendar and notifications, not a separate Cleaning item. All roles have Profile and Sign out at the bottom; Profile contains personal account details, password changes and individual preferences. Notifications show an unread-count badge that updates immediately when a notification is opened. On mobile, a hamburger button opens a navigation drawer over the current page, and selecting an item closes it.
 
+### DEC-049 — Manager-assigned customer display captions
+- **Date:** 2026-11-22
+- **Status:** Accepted
+- **Related feature:** CUS
+
+The manager assigns and maintains the customer display caption used for operational recognition. The caption may be a name or a mnemonic label and is persisted exactly as entered. OLAF does not generate duplicate-name suffixes or require captions to be unique. Phone number and email are optional. Customer search uses multi-word AND matching across caption, phone and email.
+
+### DEC-050 — Resource-oriented API conventions
+- **Date:** 2026-11-22
+- **Status:** Accepted
+- **Related architecture:** ARCHITECTURE.md
+
+Expose the application API under `/api/v1` using resource-oriented URIs, HTTP methods and status codes (Richardson Maturity Model Level 2). Use JSON for ordinary API responses and DTOs that are separate from domain entities. Use POST for resource creation and PUT for updates; updates must be idempotent, including partial updates where the request semantics are explicitly defined. Do not introduce PATCH or Idempotency-Key handling. Enforce uniqueness, business constraints and concurrency safety at the persistence boundary; preliminary availability checks are not sufficient to prevent concurrent conflicts.
+
+### DEC-051 — Shared JSON and HTMX action responses
+- **Date:** 2026-11-22
+- **Status:** Accepted
+- **Related architecture:** ARCHITECTURE.md
+
+A single controller action handles each operation and invokes the application service once. Actions marked with the parameterless `[CanReturnHtmx]` attribute support two representations: ordinary requests receive the DTO as JSON; requests carrying `HX-Request` receive the corresponding Razor partial. A centralized MVC result filter performs the conversion for successful DTO results. The partial path is inferred from the MVC controller/action descriptors using the established view convention; the partial must exist, and a missing partial is an error rather than a silent fallback. Do not use the `Accept` header to select the representation. Append `Vary: HX-Request` without discarding existing values. Leave unsuccessful results untouched and preserve relevant response status codes and headers.
+
+### DEC-052 — In-memory repositories before domain schema stabilization
+- **Date:** 2026-11-22
+- **Status:** Accepted
+- **Related architecture:** ARCHITECTURE.md
+
+Implement initial business functionality through repository contracts and in-memory Infrastructure implementations while the domain model is being established. Application services depend on repository contracts, not concrete storage implementations. Do not introduce business EF Core entities, schema changes or migrations during this stage. Once the domain model is stable, consolidate the existing migrations into a clean initial migration containing Identity and OLAF business schema; the development database may be recreated.
+
 ## 2. Deferred decisions
 
 - **Hosting environment:** The deployment model is selected; the concrete hosting provider and server environment remain open.
