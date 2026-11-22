@@ -26,10 +26,13 @@ public sealed class HtmxResultFilter : IAsyncResultFilter
 
 	public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
 	{
-		context.HttpContext.Response.Headers.AppendCommaSeparatedValues("Vary", "HX-Request");
+		var supportsHtmx = context.ActionDescriptor.FilterDescriptors.Any(filter => filter.Filter is CanReturnHtmxAttribute);
+		if (supportsHtmx)
+		{
+			context.HttpContext.Response.Headers.AppendCommaSeparatedValues("Vary", "HX-Request");
+		}
 
 		var isHtmx = context.HttpContext.Request.Headers.ContainsKey("HX-Request");
-		var supportsHtmx = context.ActionDescriptor.EndpointMetadata?.OfType<CanReturnHtmxAttribute>().Any() == true;
 		if (isHtmx && supportsHtmx && context.Result is ObjectResult objectResult
 			&& (objectResult.StatusCode is null || objectResult.StatusCode >= 200 && objectResult.StatusCode < 300)
 			&& objectResult.Value is not null
