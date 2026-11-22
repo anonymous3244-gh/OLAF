@@ -13,8 +13,8 @@ public sealed class InMemoryCustomerRepositoryTests
 	{
 		var repository = new InMemoryCustomerRepository();
 		var creates = Enumerable.Range(0, 100)
-			.Select(index => repository.AddAsync(new NewCustomerRecord(
-				"Customer " + index, null, null, null, "manager", DateTimeOffset.UtcNow)));
+			.Select(index => Task.Run(() => repository.AddAsync(new NewCustomerRecord(
+				"Customer " + index, null, null, null, "manager", DateTimeOffset.UtcNow))));
 
 		var customers = await Task.WhenAll(creates);
 
