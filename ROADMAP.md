@@ -127,7 +127,7 @@ This roadmap defines implementation order and completion outcomes. Functional re
 
 ## 5. Current checkpoint
 
-Continue Phase 1 — Application foundation with M6: complete the responsive Razor Pages layout and integrate HTMX. The next feature implementation is the Customer (CUS) vertical slice, connecting the existing UI to its API and application/domain layers rather than creating a separate frontend prototype.
+Continue Phase 1 — Application foundation with M6: complete the responsive Razor Pages layout and integrate HTMX. The Customer (CUS) vertical slice is now implemented through the domain, application service, in-memory repository, secured API, Razor Pages management UI and reservation customer picker. Customer reservation history remains dependent on the Reservation (RES) model and is completed with that vertical slice.
 
 The API and HTMX conventions, customer identification rules and initial in-memory persistence approach are recorded in `DECISIONS.md` and `ARCHITECTURE.md`.
 
