@@ -15,7 +15,7 @@
 				<strong class="date-range" id="dateRange">June 15 – 21, 2026</strong>
 			</div>
 			<button class="subtle-button date-picker-button" type="button" aria-label="Choose date">▦ <span>Choose date</span></button>
-			<button class="primary-button" type="button"><span>＋</span> New reservation</button>
+			<button class="primary-button" id="newReservationButton" type="button"><span>＋</span> New reservation</button>
 		</div>
 	</div>
 
@@ -110,5 +110,27 @@
 			</div>
 		</div>
 	</div>
+
+	<dialog class="reservation-dialog" id="reservationDialog" aria-labelledby="reservationDialogTitle">
+		<form id="reservationForm">
+			<div class="reservation-dialog-header">
+				<div><p class="dialog-eyebrow" id="reservationDialogEyebrow">CALENDAR</p><h2 id="reservationDialogTitle">New reservation</h2></div>
+				<button class="facility-panel-close" id="reservationDialogClose" type="button" aria-label="Close dialog">×</button>
+			</div>
+			<div class="reservation-form-grid">
+				<label>Reservation type<select id="reservationType" name="type"><option value="customer">Customer</option><option value="cleaning">Cleaning</option><option value="offline">Offline</option></select></label>
+				<label>Unit<select id="reservationUnit" name="unit" required></select></label>
+				<label class="form-wide">Title / name<input id="reservationTitle" name="title" type="text" maxlength="100" required placeholder="e.g. Guest name or task"></label>
+				<label>Date<input id="reservationDate" name="date" type="date" required></label>
+				<label>Start<input id="reservationStart" name="start" type="time" required step="900"></label>
+				<label>End<input id="reservationEnd" name="end" type="time" required step="900"></label>
+				<div class="form-wide reservation-type-hint" id="reservationTypeHint">Customer reservations automatically create a cleaning task.</div>
+			</div>
+			<div class="reservation-dialog-footer">
+				<button class="subtle-button" id="reservationCancel" type="button">Cancel</button>
+				<button class="primary-button" type="submit">Save reservation</button>
+			</div>
+		</form>
+	</dialog>
 	<div class="prototype-note"><span class="note-mark">i</span> Preview layout · Sample reservations are illustrative only</div>
 </section>
