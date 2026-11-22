@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OLAF.Application.Authorization;
+using OLAF.Application.Customers;
 using OLAF.Infrastructure.Persistence;
 using OLAF.Infrastructure.Customers;
 using OLAF.Web.Identity;
@@ -26,6 +27,8 @@ public static class ServiceCollectionExtensions
 		services.AddDatabaseDeveloperPageExceptionFilter();
 
 		services.AddInMemoryCustomerRepository();
+		services.AddSingleton<TimeProvider>(TimeProvider.System);
+		services.AddScoped<CustomerService>();
 
 		services
 			.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
