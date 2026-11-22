@@ -341,6 +341,7 @@
   let selectedCustomerId = null;
   let selectedCustomerRecord = null;
   let customers = [];
+  let customerSearchSequence = 0;
 
   // Make the illustrative reservations editable too, using their displayed calendar dates.
   document.querySelectorAll('.desktop-calendar .reservation').forEach((element) => {
@@ -411,12 +412,14 @@
   const renderCustomerSearch = async () => {
     if (!customerSearchResults) return;
     const query = customerSearch.value.trim();
+    const requestSequence = ++customerSearchSequence;
     customerSearchResults.replaceChildren();
     if (!query) { customerSearchResults.hidden = true; return; }
     try {
       const response = await fetch('/api/v1/customers?s=' + encodeURIComponent(query), { credentials: 'same-origin' });
       if (!response.ok) throw new Error('Customer search failed.');
       const result = await response.json();
+      if (requestSequence !== customerSearchSequence || query !== customerSearch.value.trim()) return;
       const matches = result.customers || [];
       customers = matches;
     matches.forEach((customer) => {
@@ -438,6 +441,7 @@
     }
       customerSearchResults.hidden = false;
     } catch (error) {
+      if (requestSequence !== customerSearchSequence) return;
       const failed = document.createElement('p');
       failed.className = 'customer-search-empty';
       failed.textContent = error.message;
