@@ -1,6 +1,6 @@
 # OLAF — Development Roadmap
 
-Last updated: 2026-11-06
+Last updated: 2026-11-22
 
 ## 1. Development status
 
@@ -127,7 +127,9 @@ This roadmap defines implementation order and completion outcomes. Functional re
 
 ## 5. Current checkpoint
 
-Continue Phase 1 — Application foundation with M6: establish the responsive Razor Pages layout and integrate HTMX.
+Continue Phase 1 — Application foundation with M6: complete the responsive Razor Pages layout and integrate HTMX. The next feature implementation is the Customer (CUS) vertical slice, connecting the existing UI to its API and application/domain layers rather than creating a separate frontend prototype.
+
+The API and HTMX conventions, customer identification rules and initial in-memory persistence approach are recorded in `DECISIONS.md` and `ARCHITECTURE.md`.
 
 M6 requirements and interaction decisions have been consolidated in `PROJECT.md` and `DECISIONS.md`. Planning coverage includes:
 - Responsive shared calendar, navigation, selection and refresh behavior.
