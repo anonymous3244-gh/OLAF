@@ -61,7 +61,47 @@ Application entry points and other composition roots configure and register the 
 
 The initial persistence provider is SQL Server Express, configured through the EF Core SQL Server provider. Keep provider-specific setup and any unavoidable provider-specific queries in Infrastructure or the composition root. Do not introduce a generic database abstraction solely to anticipate a possible future provider change.
 
-## 7. Reuse of existing libraries
+## 7. API design and contracts
+
+The application API is resource-oriented and uses the `/api/v1` base path. Follow HTTP resource semantics, methods and status codes at Richardson Maturity Model Level 2; HATEOAS links are not required.
+
+- Use resource nouns in URIs and standard HTTP methods for resource operations.
+- Use POST to create resources and PUT to update them. PUT operations must be idempotent; when an update changes only selected fields, define the meaning of omitted fields explicitly. Do not use PATCH.
+- Return JSON DTOs for ordinary API requests. API DTOs are distinct from domain entities and are mapped at the application/presentation boundary.
+- Keep controllers thin: accept and validate transport input, invoke an application use case and return its result.
+- Enforce business constraints, uniqueness and concurrency requirements at the persistence boundary. A preliminary availability check is useful feedback, but cannot protect against simultaneous conflicting requests by itself.
+- Do not add Idempotency-Key handling by default. Use database constraints and transactional business operations as the source of truth for data integrity.
+
+## 8. HTMX response integration
+
+An operation has one controller action and one application-service invocation, regardless of whether the caller is an ordinary API client or HTMX.
+
+Actions opt into HTMX representation support using the parameterless `[CanReturnHtmx]` attribute. A centralized MVC result filter examines the action descriptor and successful DTO result:
+- Without the `HX-Request` request header, return the DTO through the normal JSON formatter.
+- With `HX-Request`, render the inferred Razor partial using the DTO as its model.
+- Infer the partial from the MVC controller/action descriptors and the agreed view convention; do not parse the request URL.
+- The inferred partial must exist. Missing partials are configuration/development errors and must throw rather than silently falling back to another representation.
+- Do not use the `Accept` header to choose between JSON and HTML.
+- Append `HX-Request` to the response `Vary` header while preserving existing values.
+- Transform successful DTO results only. Leave unsuccessful results and unrelated result types untouched, and preserve relevant status codes and headers.
+
+The attribute is an explicit declaration that the action supports both representations; the filter should remain focused on this responsibility rather than becoming a general-purpose result-processing framework.
+
+## 9. Vertical slices and initial persistence
+
+Implement business capabilities as vertical slices, connecting the user interface, API, application use case, domain behavior and persistence contract as each feature is developed. Do not build a separate frontend prototype and later replace its business interactions with a different backend workflow.
+
+Keep responsibilities distinct:
+- Presentation owns Razor Pages, controllers, HTMX/JavaScript interactions and transport DTOs.
+- Application owns use cases, orchestration and repository contracts.
+- Domain owns business entities, value objects and domain rules.
+- Infrastructure owns repository implementations and external technical integrations.
+
+API DTOs must remain separate from domain entities. Application services depend on repository interfaces rather than concrete Infrastructure classes.
+
+Initially, implement business repositories in memory within Infrastructure while domain models and workflows stabilize. Do not add business EF Core entities or database migrations during this stage. When the domain schema is stable, consolidate migrations into a new initial migration that includes both Identity and OLAF business data; recreate the development database if necessary. Do not use `EnsureCreated()` as a temporary substitute for the migrations workflow.
+
+## 10. Reuse of existing libraries
 
 Prefer established NuGet packages and platform-provided abstractions over reinventing existing capabilities.
 
@@ -70,7 +110,7 @@ Prefer established NuGet packages and platform-provided abstractions over reinve
 - Introduce custom abstractions when existing solutions are insufficient or a meaningful architectural boundary requires them.
 - Avoid unnecessary wrappers around existing framework or library abstractions.
 
-## 8. Architectural patterns
+## 11. Architectural patterns
 
 The architecture draws on:
 
