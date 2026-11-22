@@ -35,9 +35,27 @@ public static class ServiceCollectionExtensions
 		services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 
 		services.ConfigureApplicationCookie(options =>
-		{
+			{
+			options.Events.OnRedirectToLogin = context =>
+			{
+				if (context.Request.Path.StartsWithSegments("/api"))
+				{
+					context.Response.StatusCode = 401;
+					return Task.CompletedTask;
+				}
+
+				context.Response.Redirect(context.RedirectUri);
+				return Task.CompletedTask;
+			};
+
 			options.Events.OnRedirectToAccessDenied = context =>
 			{
+				if (context.Request.Path.StartsWithSegments("/api"))
+				{
+					context.Response.StatusCode = 403;
+					return Task.CompletedTask;
+				}
+
 				var redirectUri = context.HttpContext.User.HasClaim(OlafClaimTypes.MustChangePassword, "true")
 					? "/Identity/Account/ChangePassword"
 					: context.RedirectUri;
