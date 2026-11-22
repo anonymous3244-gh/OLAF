@@ -440,3 +440,11 @@ Customer records contain a required manager-controlled display caption, optional
 - **Related feature:** CUS
 
 Use `PUT /api/v1/customers/{id}/activation` to change a customer's active state in either direction. The request explicitly supplies the desired active state; do not create separate activation and deactivation endpoints.
+
+
+### DEC-055 — Repository-owned identity generation and immutable customer snapshots
+- **Date:** 2026-11-22
+- **Status:** Accepted
+- **Related feature:** CUS
+
+Callers do not supply customer IDs or request the next available ID. The repository generates IDs as part of the atomic create operation and returns the created customer. Customer domain objects are immutable snapshots; updates and activation changes produce replacement snapshots. The in-memory repository synchronizes collection access and mutation, while the application layer remains independent of the ID-generation strategy.
