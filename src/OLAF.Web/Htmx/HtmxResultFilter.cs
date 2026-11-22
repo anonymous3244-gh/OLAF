@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -29,7 +29,7 @@ public sealed class HtmxResultFilter : IAsyncResultFilter
 		context.HttpContext.Response.Headers.AppendCommaSeparatedValues("Vary", "HX-Request");
 
 		var isHtmx = context.HttpContext.Request.Headers.ContainsKey("HX-Request");
-		var supportsHtmx = context.ActionDescriptor.EndpointMetadata.OfType<CanReturnHtmxAttribute>().Any();
+		var supportsHtmx = context.ActionDescriptor.EndpointMetadata?.OfType<CanReturnHtmxAttribute>().Any() == true;
 		if (isHtmx && supportsHtmx && context.Result is ObjectResult objectResult
 			&& (objectResult.StatusCode is null || objectResult.StatusCode >= 200 && objectResult.StatusCode < 300)
 			&& objectResult.Value is not null
