@@ -7,6 +7,7 @@ namespace OLAF.Application.Customers;
 
 public interface ICustomerRepository
 {
+	int GetNextId();
 	Task<Customer?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
 	Task<IReadOnlyList<Customer>> SearchAsync(
