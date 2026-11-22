@@ -318,14 +318,36 @@
   const reservationType = document.getElementById('reservationType');
   const reservationUnit = document.getElementById('reservationUnit');
   const reservationTitle = document.getElementById('reservationTitle');
-  const reservationDate = document.getElementById('reservationDate');
+  const reservationTitleField = document.getElementById('reservationTitleField');
+  const customerPickerField = document.getElementById('customerPickerField');
+  const customerSearch = document.getElementById('customerSearch');
+  const customerSearchResults = document.getElementById('customerSearchResults');
+  const customerSelectionHint = document.getElementById('customerSelectionHint');
+  const reservationStartDate = document.getElementById('reservationStartDate');
+  const reservationEndDate = document.getElementById('reservationEndDate');
   const reservationStart = document.getElementById('reservationStart');
   const reservationEnd = document.getElementById('reservationEnd');
   const reservationTypeHint = document.getElementById('reservationTypeHint');
   const reservationDialogTitle = document.getElementById('reservationDialogTitle');
   const reservationDialogEyebrow = document.getElementById('reservationDialogEyebrow');
+  const customerDialog = document.getElementById('customerDialog');
+  const customerForm = document.getElementById('customerForm');
+  const customerName = document.getElementById('customerName');
+  const customerPhone = document.getElementById('customerPhone');
+  const customerEmail = document.getElementById('customerEmail');
   const reservationUnits = facilityCheckboxes.map((checkbox) => ({ id: checkbox.value, label: checkbox.closest('.facility-option').querySelector('strong').textContent }));
   let editingReservation = null;
+  let selectedCustomerId = null;
+  let nextCustomerId = 7;
+  // Illustrative in-memory customer records; these are not persisted.
+  const customers = [
+    { id: 1, name: 'Alex Morgan', phone: '+381 64 111 2233', email: 'alex.morgan@example.test' },
+    { id: 2, name: 'Jamie Wilson', phone: '+381 63 222 3344', email: 'jamie.wilson@example.test' },
+    { id: 3, name: 'Taylor Reed', phone: '+381 65 333 4455', email: 'taylor.reed@example.test' },
+    { id: 4, name: 'Jordan Lee', phone: '+381 64 444 5566', email: 'jordan.lee@example.test' },
+    { id: 5, name: 'Sam Parker', phone: '+381 62 555 6677', email: 'sam.parker@example.test' },
+    { id: 6, name: 'Casey Smith', phone: '+381 60 666 7788', email: 'casey.smith@example.test' }
+  ];
 
   // Make the illustrative reservations editable too, using their displayed calendar dates.
   document.querySelectorAll('.desktop-calendar .reservation').forEach((element) => {
@@ -336,6 +358,8 @@
     const match = (element.dataset.timeRange || '').match(/(\\d{2}:\\d{2})–(\\d{2}:\\d{2})/);
     if (match) {
       element.dataset.date = dateKey(date);
+      element.dataset.startDate = dateKey(date);
+      element.dataset.endDate = dateKey(date);
       element.dataset.startTime = match[1];
       element.dataset.endTime = match[2];
     }
@@ -349,6 +373,8 @@
     const start = Number(element.dataset.start);
     const end = Number(element.dataset.end);
     element.dataset.date = dateKey(selectedDate);
+    element.dataset.startDate = dateKey(selectedDate);
+    element.dataset.endDate = dateKey(selectedDate);
     element.dataset.startTime = toTime(Math.floor(start), Math.round((start % 1) * 60));
     element.dataset.endTime = toTime(Math.floor(end), Math.round((end % 1) * 60));
     element.dataset.type = element.classList.contains('cleaning-block') ? 'cleaning' : element.classList.contains('offline-block') ? 'offline' : 'customer';
@@ -359,7 +385,10 @@
   });
 
   function dateKey(date) { return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-'); }
-  function toTime(hour, minute) { return String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0'); }
+  function toTime(hour, minute) {
+    const normalized = ((hour * 60 + minute) % 1440 + 1440) % 1440;
+    return String(Math.floor(normalized / 60)).padStart(2, '0') + ':' + String(normalized % 60).padStart(2, '0');
+  }
   const selectedUnitIds = () => [...selectedFacilities];
   const populateUnitOptions = (preferredId) => {
     reservationUnit.replaceChildren();
@@ -379,9 +408,55 @@
       cleaning: 'Use the title to describe the cleaning task.',
       offline: 'Use the title to describe the maintenance or offline period.'
     };
+    const isCustomer = reservationType.value === 'customer';
     reservationTypeHint.textContent = hints[reservationType.value];
-    reservationTitle.placeholder = reservationType.value === 'customer' ? 'Customer name' : reservationType.value === 'cleaning' ? 'Cleaning task' : 'Maintenance / offline reason';
+    customerPickerField.hidden = !isCustomer;
+    reservationTitleField.hidden = isCustomer;
+    reservationTitle.required = !isCustomer;
+    reservationTitle.placeholder = reservationType.value === 'cleaning' ? 'Cleaning task' : 'Maintenance / offline reason';
   };
+  const renderCustomerSearch = () => {
+    if (!customerSearchResults) return;
+    const query = customerSearch.value.trim().toLocaleLowerCase();
+    customerSearchResults.replaceChildren();
+    const matches = query ? customers.filter((customer) =>
+      [customer.name, customer.phone, customer.email].some((value) => value && value.toLocaleLowerCase().includes(query))
+    ) : [];
+    matches.forEach((customer) => {
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.className = 'customer-search-option';
+      option.setAttribute('role', 'option');
+      option.innerHTML = '<strong></strong><span></span>';
+      option.querySelector('strong').textContent = customer.name;
+      option.querySelector('span').textContent = [customer.phone, customer.email].filter(Boolean).join(' · ') || 'No contact details';
+      option.addEventListener('click', () => selectCustomer(customer));
+      customerSearchResults.appendChild(option);
+    });
+    if (query && !matches.length) {
+      const empty = document.createElement('p');
+      empty.className = 'customer-search-empty';
+      empty.textContent = 'No matching customer. Use ＋ to create a new one.';
+      customerSearchResults.appendChild(empty);
+    }
+    customerSearchResults.hidden = !query;
+  };
+  const selectCustomer = (customer) => {
+    selectedCustomerId = customer.id;
+    customerSearch.value = customer.name;
+    customerSearchResults.hidden = true;
+    customerSelectionHint.textContent = [customer.phone, customer.email].filter(Boolean).join(' · ') || 'Customer selected — contact details can be added later.';
+  };
+  const clearCustomerSelection = () => {
+    selectedCustomerId = null;
+    customerSelectionHint.textContent = 'Choose an existing customer or create a new one.';
+  };
+  customerSearch?.addEventListener('input', () => {
+    clearCustomerSelection();
+    renderCustomerSearch();
+  });
+  customerSearch?.addEventListener('focus', renderCustomerSearch);
+
   const openReservationDialog = ({ date, start, end, unitId, reservation } = {}) => {
     if (!reservationDialog) return;
     editingReservation = reservation || null;
@@ -389,15 +464,35 @@
     populateUnitOptions(unitId || reservation?.dataset.facility);
     reservationType.value = reservation?.dataset.type || 'customer';
     reservationTitle.value = reservation?.querySelector('b')?.textContent || '';
-    reservationDate.value = reservation?.dataset.date || dateKey(date || selectedDate);
-    reservationStart.value = reservation?.dataset.startTime || start || '09:00';
-    reservationEnd.value = reservation?.dataset.endTime || end || '10:00';
+    const startDate = reservation?.dataset.startDate || reservation?.dataset.date || dateKey(date || selectedDate);
+    let endDate = reservation?.dataset.endDate || startDate;
+    let startTime = reservation?.dataset.startTime || start || '09:00';
+    let endTime = reservation?.dataset.endTime || end || '10:00';
+    if (!reservation && end && end < (start || '09:00')) {
+      const next = new Date(startDate + 'T00:00:00');
+      next.setDate(next.getDate() + 1);
+      endDate = dateKey(next);
+    }
+    reservationStartDate.value = startDate;
+    reservationEndDate.value = endDate;
+    reservationStart.value = startTime;
+    reservationEnd.value = endTime;
+    selectedCustomerId = null;
+    customerSearch.value = '';
+    customerSearchResults.hidden = true;
+    const existingName = reservation?.dataset.type === 'customer' ? reservation.querySelector('b')?.textContent : null;
+    const existingCustomer = existingName ? customers.find((customer) => customer.name === existingName) : null;
+    if (existingCustomer) selectCustomer(existingCustomer);
+    else if (existingName) {
+      const placeholderCustomer = { id: nextCustomerId++, name: existingName, phone: '', email: '' };
+      customers.push(placeholderCustomer);
+      selectCustomer(placeholderCustomer);
+    } else clearCustomerSelection();
     reservationDialogTitle.textContent = editingReservation ? 'Edit reservation' : 'New reservation';
     reservationDialogEyebrow.textContent = editingReservation ? 'EDIT RESERVATION' : 'CALENDAR';
-    reservationType.disabled = false;
     updateTypeHint();
     reservationDialog.showModal();
-    reservationTitle.focus();
+    (reservationType.value === 'customer' ? customerSearch : reservationTitle).focus();
   };
   const closeReservationDialog = () => {
     if (reservationDialog?.open) reservationDialog.close();
@@ -420,22 +515,52 @@
     if (event.target === reservationDialog) event.preventDefault();
   });
 
+  document.getElementById('newCustomerButton')?.addEventListener('click', () => {
+    customerForm.reset();
+    customerDialog.showModal();
+    customerName.focus();
+  });
+  const closeCustomerDialog = () => { if (customerDialog.open) customerDialog.close(); };
+  document.getElementById('customerDialogClose')?.addEventListener('click', closeCustomerDialog);
+  document.getElementById('customerCancel')?.addEventListener('click', closeCustomerDialog);
+  customerDialog?.addEventListener('cancel', (event) => event.preventDefault());
+  customerDialog?.addEventListener('click', (event) => { if (event.target === customerDialog) event.preventDefault(); });
+  customerForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!customerForm.reportValidity()) return;
+    const customer = {
+      id: nextCustomerId++,
+      name: customerName.value.trim(),
+      phone: customerPhone.value.trim(),
+      email: customerEmail.value.trim()
+    };
+    if (!customer.name) return;
+    customers.push(customer);
+    closeCustomerDialog();
+    selectCustomer(customer);
+    customerSearchResults.hidden = true;
+    customerSearch.focus();
+  });
+
   const setReservationData = (element, data) => {
     element.dataset.facility = data.unitId;
-    element.dataset.date = data.date;
+    element.dataset.date = data.startDate;
+    element.dataset.startDate = data.startDate;
+    element.dataset.endDate = data.endDate;
     element.dataset.type = data.type;
     element.dataset.startTime = data.start;
     element.dataset.endTime = data.end;
     element.querySelector('b').textContent = data.title;
     const unitLabel = reservationUnits.find((unit) => unit.id === data.unitId)?.label || data.unitId;
-    element.querySelector('span').textContent = unitLabel + ' · ' + data.start + '–' + data.end;
+    const dateLabel = data.endDate !== data.startDate ? ' · until ' + data.endDate : '';
+    element.querySelector('span').textContent = unitLabel + ' · ' + data.start + '–' + data.end + dateLabel;
     element.classList.remove('customer-block', 'cleaning-block', 'offline-block');
     element.classList.add(data.type + '-block');
     const startParts = data.start.split(':').map(Number);
     const endParts = data.end.split(':').map(Number);
     const startValue = startParts[0] + startParts[1] / 60;
     let endValue = endParts[0] + endParts[1] / 60;
-    if (endValue <= startValue) endValue += 24;
+    if (data.endDate !== data.startDate || endValue <= startValue) endValue += 24;
     if (element.classList.contains('mobile-reservation')) {
       element.dataset.start = String(startValue);
       element.dataset.end = String(endValue);
@@ -463,9 +588,9 @@
     if (editingReservation) {
       setReservationData(editingReservation, data);
     } else {
-      const desktopTrack = getDesktopTrackForDate(new Date(data.date + 'T00:00:00'));
+      const desktopTrack = getDesktopTrackForDate(new Date(data.startDate + 'T00:00:00'));
       if (desktopTrack) desktopTrack.appendChild(makeReservationElement(data, false));
-      if (mobileTrack) mobileTrack.appendChild(makeReservationElement(data, true));
+      if (mobileTrack && data.startDate === dateKey(selectedDate)) mobileTrack.appendChild(makeReservationElement(data, true));
     }
     renderDate();
     applyFacilitySelection();
@@ -474,17 +599,23 @@
   reservationForm?.addEventListener('submit', (event) => {
     event.preventDefault();
     if (!reservationForm.reportValidity()) return;
+    const isCustomer = reservationType.value === 'customer';
     const data = {
       type: reservationType.value,
       unitId: reservationUnit.value,
-      title: reservationTitle.value.trim(),
-      date: reservationDate.value,
+      title: isCustomer ? customers.find((customer) => customer.id === selectedCustomerId)?.name : reservationTitle.value.trim(),
+      customerId: isCustomer ? selectedCustomerId : null,
+      startDate: reservationStartDate.value,
+      endDate: reservationEndDate.value,
       start: reservationStart.value,
       end: reservationEnd.value
     };
-    if (!data.title || !data.unitId || !data.date || !data.start || !data.end) return;
-    if (data.end <= data.start) {
-      window.alert('The end time must be later than the start time.');
+    if (!data.title || !data.unitId || !data.startDate || !data.endDate || !data.start || !data.end) {
+      if (isCustomer && !selectedCustomerId) customerSearch.focus();
+      return;
+    }
+    if (data.endDate < data.startDate || (data.endDate === data.startDate && data.end <= data.start)) {
+      window.alert('The end date and time must be later than the start date and time.');
       return;
     }
     saveReservation(data);
