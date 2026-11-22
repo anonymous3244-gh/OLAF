@@ -120,16 +120,34 @@
 			<div class="reservation-form-grid">
 				<label>Reservation type<select id="reservationType" name="type"><option value="customer">Customer</option><option value="cleaning">Cleaning</option><option value="offline">Offline</option></select></label>
 				<label>Unit<select id="reservationUnit" name="unit" required></select></label>
-				<label class="form-wide">Title / name<input id="reservationTitle" name="title" type="text" maxlength="100" required placeholder="e.g. Guest name or task"></label>
-				<label>Date<input id="reservationDate" name="date" type="date" required></label>
-				<label>Start<input id="reservationStart" name="start" type="time" required step="900"></label>
-				<label>End<input id="reservationEnd" name="end" type="time" required step="900"></label>
+				<div class="form-wide customer-picker-field" id="customerPickerField">
+					<label for="customerSearch">Customer</label>
+					<div class="customer-picker-row"><input id="customerSearch" type="search" autocomplete="off" placeholder="Search by name, phone, or email"><button class="secondary-icon-button" id="newCustomerButton" type="button" aria-label="Create customer" title="Create customer">＋</button></div>
+					<div class="customer-search-results" id="customerSearchResults" role="listbox" hidden></div>
+					<p class="customer-selection-hint" id="customerSelectionHint">Choose an existing customer or create a new one.</p>
+				</div>
+				<label class="form-wide" id="reservationTitleField">Title / name<input id="reservationTitle" name="title" type="text" maxlength="100" placeholder="e.g. Cleaning task"></label>
+				<label>Start date<input id="reservationStartDate" name="startDate" type="date" required></label>
+				<label>Start time<input id="reservationStart" name="start" type="time" required step="900"></label>
+				<label>End date<input id="reservationEndDate" name="endDate" type="date" required></label>
+				<label>End time<input id="reservationEnd" name="end" type="time" required step="900"></label>
 				<div class="form-wide reservation-type-hint" id="reservationTypeHint">Customer reservations automatically create a cleaning task.</div>
 			</div>
 			<div class="reservation-dialog-footer">
 				<button class="subtle-button" id="reservationCancel" type="button">Cancel</button>
 				<button class="primary-button" type="submit">Save reservation</button>
 			</div>
+		</form>
+	</dialog>
+	<dialog class="customer-dialog" id="customerDialog" aria-labelledby="customerDialogTitle">
+		<form id="customerForm">
+			<div class="reservation-dialog-header"><div><p class="dialog-eyebrow">CUSTOMER</p><h2 id="customerDialogTitle">New customer</h2></div><button class="facility-panel-close" id="customerDialogClose" type="button" aria-label="Close customer dialog">×</button></div>
+			<div class="reservation-form-grid">
+				<label class="form-wide">Name<input id="customerName" name="name" type="text" maxlength="120" required autocomplete="name" placeholder="Customer name"></label>
+				<label class="form-wide">Phone <span class="optional-label">Optional</span><input id="customerPhone" name="phone" type="tel" maxlength="40" autocomplete="tel" placeholder="Phone number"></label>
+				<label class="form-wide">Email <span class="optional-label">Optional</span><input id="customerEmail" name="email" type="email" maxlength="254" autocomplete="email" placeholder="Email address"></label>
+			</div>
+			<div class="reservation-dialog-footer"><button class="subtle-button" id="customerCancel" type="button">Cancel</button><button class="primary-button" type="submit">Create customer</button></div>
 		</form>
 	</dialog>
 	<div class="prototype-note"><span class="note-mark">i</span> Preview layout · Sample reservations are illustrative only</div>
