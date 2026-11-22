@@ -49,7 +49,7 @@ public sealed class HtmxResultFilter : IAsyncResultFilter
 			{
 				Model = objectResult.Value
 			};
-			context.Result = new ViewResult
+			context.Result = new PartialViewResult
 			{
 				ViewName = viewName,
 				ViewData = viewData,
