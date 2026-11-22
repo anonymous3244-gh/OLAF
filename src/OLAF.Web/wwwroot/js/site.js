@@ -487,7 +487,7 @@
     customerSearch.value = '';
     customerSearchResults.hidden = true;
     const existingName = reservation?.dataset.type === 'customer' ? reservation.querySelector('b')?.textContent : null;
-    const existingCustomer = existingName ? customers.find((customer) => customer.name === existingName) : null;
+    const existingCustomer = existingName ? customers.find((customer) => customer.displayCaption === existingName) : null;
     if (existingCustomer) selectCustomer(existingCustomer);
     else if (existingName) {
       customerSearch.value = existingName;
@@ -531,7 +531,7 @@
   document.getElementById('customerCancel')?.addEventListener('click', closeCustomerDialog);
   customerDialog?.addEventListener('cancel', (event) => event.preventDefault());
   customerDialog?.addEventListener('click', (event) => { if (event.target === customerDialog) event.preventDefault(); });
-  customerForm?.addEventListener('submit', (event) => {
+  customerForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!customerForm.reportValidity()) return;
     const payload = {
