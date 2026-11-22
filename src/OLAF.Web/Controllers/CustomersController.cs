@@ -89,7 +89,13 @@ public sealed class CustomersController : Controller
 		[FromBody] CustomerActivationRequest request,
 		CancellationToken cancellationToken = default)
 	{
-		var customer = await customers.SetActiveAsync(id, request.IsActive, CurrentUser(), cancellationToken);
+		if (request.IsActive is null)
+		{
+			ModelState.AddModelError(nameof(request.IsActive), "The desired active state must be supplied.");
+			return ValidationProblem(ModelState);
+		}
+
+		var customer = await customers.SetActiveAsync(id, request.IsActive.Value, CurrentUser(), cancellationToken);
 		if (customer is null) return NotFound();
 		return CustomerDto.From(customer);
 	}
@@ -100,7 +106,7 @@ public sealed class CustomersController : Controller
 }
 
 public sealed record CustomerWriteRequest(string DisplayCaption, string? Phone, string? Email, string? Notes);
-public sealed record CustomerActivationRequest(bool IsActive);
+public sealed record CustomerActivationRequest(bool? IsActive);
 public sealed record CustomerSearchResponse(CustomerDto[] Customers);
 public sealed record CustomerDto(int Id, string DisplayCaption, string? Phone, string? Email, string? Notes, bool IsActive, string UpdatedBy, System.DateTimeOffset UpdatedAt)
 {
